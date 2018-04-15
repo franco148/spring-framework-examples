@@ -30,7 +30,7 @@ public class ProductServiceRepoImpl implements ProductService {
 
     @Override
     public Product getById(Integer id) {
-        return productRepository.findById(id).get();
+        return productRepository.findOne(id);
     }
 
     @Override
@@ -40,6 +40,6 @@ public class ProductServiceRepoImpl implements ProductService {
 
     @Override
     public void delete(Integer id) {
-        productRepository.deleteById(id);
+        productRepository.delete(id);
     }
 }
