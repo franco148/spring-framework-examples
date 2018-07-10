@@ -90,8 +90,8 @@ public class ClientController {
 	public String crear(Map<String, Object> model) {
 
 		Client cliente = new Client();
-		model.put("cliente", cliente);
-		model.put("titulo", "Crear Cliente");
+		model.put("client", cliente);
+		model.put("title", "Crear Cliente");
 		return "form";
 	}
 
