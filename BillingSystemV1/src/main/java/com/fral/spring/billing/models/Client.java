@@ -28,20 +28,20 @@ public class Client implements Serializable {
 	private Long id;
 
 	@NotEmpty
-	private String nombre;
+	private String name;
 	
 	@NotEmpty
-	private String apellido;
+	private String lastName;
 	
 	@NotEmpty
 	@Email
 	private String email;
 
 	@NotNull
-	@Column(name = "create_at")
+	@Column(name = "created_at")
 	@Temporal(TemporalType.DATE)
 	@DateTimeFormat(pattern="yyyy-MM-dd")
-	private Date createAt;
+	private Date createdAt;
 	
 	public Long getId() {
 		return id;
@@ -51,20 +51,20 @@ public class Client implements Serializable {
 		this.id = id;
 	}
 
-	public String getNombre() {
-		return nombre;
+	public String getName() {
+		return name;
 	}
 
-	public void setNombre(String nombre) {
-		this.nombre = nombre;
+	public void setName(String name) {
+		this.name = name;
 	}
 
-	public String getApellido() {
-		return apellido;
+	public String getLastName() {
+		return lastName;
 	}
 
-	public void setApellido(String apellido) {
-		this.apellido = apellido;
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
 	}
 
 	public String getEmail() {
@@ -75,12 +75,12 @@ public class Client implements Serializable {
 		this.email = email;
 	}
 
-	public Date getCreateAt() {
-		return createAt;
+	public Date getCreatedAt() {
+		return createdAt;
 	}
 
-	public void setCreateAt(Date createAt) {
-		this.createAt = createAt;
+	public void setCreatedAt(Date createAt) {
+		this.createdAt = createAt;
 	}
 
 
