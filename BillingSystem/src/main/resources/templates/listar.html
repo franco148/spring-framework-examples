@@ -8,7 +8,7 @@
 	<div class="container py-4">
 
 		<div class="card bg-light">
-			<div class="card-header" th:text="${titulo}"></div>
+			<div class="card-header" th:text="${title}"></div>
 			<div class="card-body">
 
 				<h4 class="card-title">
@@ -28,7 +28,7 @@
 						</tr>
 					</thead>
 					<tbody>
-						<tr th:each="cliente: ${clientes}">
+						<tr th:each="cliente: ${clients}">
 							<td><a class="btn btn-primary btn-xs" 
 							th:href="@{/ver/} + ${cliente.id}" th:text="${cliente.id}"></a></td>
 							<td th:text="${cliente.name}"></td>
