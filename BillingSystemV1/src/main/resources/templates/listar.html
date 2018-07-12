@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8"/>
+<title th:text="${title}">Insert title here</title>
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" />
+</head>
+<body>
+	<table>
+		<thead class="thead-inverse">
+			<tr>
+				<th>id</th>
+				<th>name</th>
+				<th>last name</th>
+				<th>email</th>
+				<th>date</th>
+				<th>edit</th>
+				<th>delete</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr th:each="cliente: ${clients}">
+				<td th:text="${cliente.id}"></td>
+				<td th:text="${cliente.name}"></td>
+				<td th:text="${cliente.lastName}"></td>
+				<td th:text="${cliente.email}"></td>
+				<td th:text="${cliente.createdAt}"></td>
+				<td><a class="btn btn-primary btn-xs" th:href="@{/form/} + ${cliente.id}" th:text="'editar'"></a></td>
+				<td><a class="btn btn-danger btn-xs" th:href="@{/delete/} + ${cliente.id}" th:text="'eliminar'" onclick="return confirm('Estás seguro que quieres eliminar?');"></a></td>
+			</tr>
+		</tbody>
+	</table>
+</body>
+</html>
