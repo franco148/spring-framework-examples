@@ -22,4 +22,25 @@ public class ClientServiceImpl implements ClientService {
 		return clientDao.findAll();
 	}
 
+	@Override
+	@Transactional
+	public void save(Client cliente) {
+		clientDao.save(cliente);
+		
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public Client findOne(Long id) {
+		// TODO Auto-generated method stub
+		return clientDao.findOne(id);
+	}
+
+	@Override
+	@Transactional
+	public void delete(Long id) {
+		clientDao.delete(id);
+		
+	}
+
 }
