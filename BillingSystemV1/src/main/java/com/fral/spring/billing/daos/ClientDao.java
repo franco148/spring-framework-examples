@@ -1,17 +1,9 @@
 package com.fral.spring.billing.daos;
 
-import java.util.List;
+import org.springframework.data.repository.PagingAndSortingRepository;
 
 import com.fral.spring.billing.models.Client;
 
-public interface ClientDao {
-	
-	List<Client> findAll();
-
-	void save(Client client);
-	
-	Client findOne(Long id);
-	
-	void delete(Long id);
-
+public interface ClientDao extends PagingAndSortingRepository<Client, Long> {
+		
 }
