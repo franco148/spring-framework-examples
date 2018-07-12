@@ -22,4 +22,23 @@ public class ClientDaoImpl implements ClientDao {
 		return entityManager.createQuery("from Client").getResultList();
 	}
 
+	@Override
+	public Client findOne(Long id) {
+		return entityManager.find(Client.class, id);
+	}
+	
+	@Override
+	public void save(Client cliente) {
+		if(cliente.getId() != null && cliente.getId() > 0) {
+			entityManager.merge(cliente);
+		} else {
+			entityManager.persist(cliente);
+		}
+	}
+
+
+	@Override
+	public void delete(Long id) {
+		entityManager.remove(findOne(id));
+	}
 }

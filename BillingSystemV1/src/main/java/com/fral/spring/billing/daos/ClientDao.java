@@ -6,6 +6,12 @@ import com.fral.spring.billing.models.Client;
 
 public interface ClientDao {
 	
-	public List<Client> findAll();
+	List<Client> findAll();
+
+	void save(Client client);
+	
+	Client findOne(Long id);
+	
+	void delete(Long id);
 
 }
