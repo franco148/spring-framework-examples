@@ -5,9 +5,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.validation.Valid;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -34,6 +37,8 @@ public class ClientController {
 
 	@Autowired
 	private ClientService clientService;
+	
+	private final Logger log = LoggerFactory.getLogger(getClass());
 	
 	
 	@GetMapping(value = "/ver/{id}")
@@ -106,16 +111,33 @@ public class ClientController {
 		}
 		
 		if (!photo.isEmpty()) {
-			String rootPath = "D://CODE//TMP//SpringFrameworkCourse//uploads";
+						
+			// SECOND VERSION: Absolute and external directory
+			String uniqueFilename = UUID.randomUUID().toString() + "_" + photo.getOriginalFilename();
+			Path rootPath = Paths.get("uploads").resolve(uniqueFilename);
+
+			Path rootAbsolutPath = rootPath.toAbsolutePath();
+			
+			log.info("rootPath: " + rootPath);
+			log.info("rootAbsolutPath: " + rootAbsolutPath);
 			
 			try {
 
-				byte[] bytes = photo.getBytes();
-				Path rutaCompleta = Paths.get(rootPath + "//" + photo.getOriginalFilename());
-				Files.write(rutaCompleta, bytes);
-				flash.addFlashAttribute("info", "Has subido correctamente '" + photo.getOriginalFilename() + "'");
+				// FIRST VERSION: Uploads to external directory
+//				String rootPath = "D://CODE//TMP//SpringFrameworkCourse//uploads";
+//				byte[] bytes = photo.getBytes();
+//				Path rutaCompleta = Paths.get(rootPath + "//" + photo.getOriginalFilename());
+//				Files.write(rutaCompleta, bytes);
+//				flash.addFlashAttribute("info", "Has subido correctamente '" + photo.getOriginalFilename() + "'");
+//
+//				cliente.setPhoto(photo.getOriginalFilename());
+				
+				// SECOND VERSION: Absolute and external directory
+				Files.copy(photo.getInputStream(), rootAbsolutPath);
+				
+				flash.addFlashAttribute("info", "Image loaded successfully '" + uniqueFilename + "'");
 
-				cliente.setPhoto(photo.getOriginalFilename());
+				cliente.setPhoto(uniqueFilename);
 
 			} catch (IOException e) {
 				e.printStackTrace();
