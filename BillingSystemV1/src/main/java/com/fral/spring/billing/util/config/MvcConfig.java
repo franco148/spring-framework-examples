@@ -13,7 +13,9 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
 	
-	@Override
+	
+	// SECOND VERSION: Comment all the configuration. It is not needed.
+	/*@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
 		// FIRST VERSION: Uploads to external directory
 //		super.addResourceHandlers(registry);
@@ -29,6 +31,6 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
 		registry.addResourceHandler("/uploads/**")
 		.addResourceLocations(resourcePath);
 
-	}
+	}*/
 
 }

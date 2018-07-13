@@ -1,6 +1,7 @@
 package com.fral.spring.billing.controllers;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -12,9 +13,13 @@ import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -40,6 +45,26 @@ public class ClientController {
 	
 	private final Logger log = LoggerFactory.getLogger(getClass());
 	
+	
+	@GetMapping(value="/uploads/{filename:.+}")
+	public ResponseEntity<Resource> seePhoto(@PathVariable String filename) {
+		Path pathPhoto = Paths.get("uploads").resolve(filename).toAbsolutePath();
+		log.info("pathFoto: " + pathPhoto);
+		Resource recurso = null;
+		try {
+			recurso = new UrlResource(pathPhoto.toUri());
+			if(!recurso.exists() || !recurso.isReadable()) {
+				throw new RuntimeException("Error: Image can not be loaded: " + pathPhoto.toString());
+			}
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return ResponseEntity.ok()
+				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" +  recurso.getFilename() +"\"")
+				.body(recurso);
+	}
 	
 	@GetMapping(value = "/ver/{id}")
 	public String ver(@PathVariable(value = "id") Long id, Map<String, Object> model, RedirectAttributes flash) {
