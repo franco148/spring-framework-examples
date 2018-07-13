@@ -1,6 +1,7 @@
 /* Populate tables */
-INSERT INTO clients (name, last_name, email, created_at, photo) VALUES('Andres', 'Guzman', 'profesor@bolsadeideas.com', '2017-08-01', '');
-INSERT INTO clients (name, last_name, email, created_at, photo) VALUES('John', 'Doe', 'john.doe@gmail.com', '2017-08-02', '');
+INSERT INTO clients (name, last_name, email, created_at, photo) VALUES('Franco', 'Arratia', 'franco@extreme.com', '2017-08-28', '');
+INSERT INTO clients (name, last_name, email, created_at, photo) VALUES('John', 'Doe', 'john.doe@gmail.com', '2017-08-28', '');
+INSERT INTO clients (name, last_name, email, created_at, photo) VALUES('John', 'Murillo', 'john.doe@gmail.com', '2017-08-02', '');
 INSERT INTO clients (name, last_name, email, created_at, photo) VALUES('Linus', 'Torvalds', 'linus.torvalds@gmail.com', '2017-08-03', '');
 INSERT INTO clients (name, last_name, email, created_at, photo) VALUES('Jane', 'Doe', 'jane.doe@gmail.com', '2017-08-04', '');
 INSERT INTO clients (name, last_name, email, created_at, photo) VALUES('Rasmus', 'Lerdorf', 'rasmus.lerdorf@gmail.com', '2017-08-05', '');

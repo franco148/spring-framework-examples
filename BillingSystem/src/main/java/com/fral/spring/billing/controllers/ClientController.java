@@ -1,5 +1,6 @@
 package com.fral.spring.billing.controllers;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.Map;
 
@@ -35,141 +36,148 @@ public class ClientController {
 
 	@Autowired
 	private ClientService clientService;
-	
+
 	@Autowired
 	private UploadFileService uploadFileService;
 	
 	
-	@GetMapping(value = "/uploads/{filename:.+}")
-	public ResponseEntity<Resource> seePhoto(@PathVariable String fileName) {
+	@GetMapping(value="/uploads/{filename:.+}")
+	public ResponseEntity<Resource> seePhoto(@PathVariable String filename) {
 		
-		Resource resource = null;
-		
+		Resource recurso = null;
+
 		try {
-			resource = uploadFileService.load(fileName);					
+			recurso = uploadFileService.load(filename);
 		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		return ResponseEntity.ok()
-							 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
-							 .body(resource);
+				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + recurso.getFilename() + "\"")
+				.body(recurso);
 	}
 	
 	@GetMapping(value = "/ver/{id}")
 	public String ver(@PathVariable(value = "id") Long id, Map<String, Object> model, RedirectAttributes flash) {
 
-		Client client = clientService.findOne(id);
-		if (client == null) {
-			flash.addFlashAttribute("error", "El cliente no existe en la base de datos");
+		Client cliente = clientService.findOne(id);
+		if (cliente == null) {
+			flash.addFlashAttribute("error", "Client does not exist in the system.");
 			return "redirect:/listar";
 		}
 
-		model.put("client", client);
-		model.put("title", "Client detail: " + client.getName());
+		model.put("client", cliente);
+		model.put("title", "Client detail: " + cliente.getName());
 		return "ver";
 	}
-
-	//@RequestMapping(value = "/listar", method = RequestMethod.GET)
-	@GetMapping(value = "/listar")
-	public String listar(@RequestParam(name = "page", defaultValue = "0") int page, Model model) {
-
-		Pageable pageRequest = new PageRequest(page, 4);
-
+	
+	@GetMapping("/listar")
+	public String listar(@RequestParam(name="page", defaultValue="0") int page, Model model) {
+		
+		Pageable pageRequest = PageRequest.of(page, 4);
+		
 		Page<Client> clientes = clientService.findAll(pageRequest);
-
-		PageRender<Client> pageRender = new PageRender<Client>("/listar", clientes);
-		model.addAttribute("title", "Clients list");
+		
+		PageRender<Client> pageRender = new PageRender<>("/listar", clientes);
+		
+		model.addAttribute("title", "Clients List");
 		model.addAttribute("clients", clientes);
 		model.addAttribute("page", pageRender);
+		
 		return "listar";
 	}
 
-	//@RequestMapping(value = "/form")
-	@GetMapping(value = "/form")
+	@GetMapping("/form")
 	public String crear(Map<String, Object> model) {
 
 		Client cliente = new Client();
 		model.put("client", cliente);
-		model.put("title", "Crear Cliente");
+		model.put("title", "Create Client");
 		return "form";
 	}
-
-	//@RequestMapping(value = "/form/{id}")
-	@GetMapping(value = "/form/{id}")
-	public String editar(@PathVariable(value = "id") Long id, Map<String, Object> model, RedirectAttributes flash) {
-
+	
+	@GetMapping("/form/{id}")
+	public String editar(@PathVariable(value="id") Long id, Map<String, Object> model, RedirectAttributes flash) {
+		
 		Client cliente = null;
-
-		if (id > 0) {
+		
+		if(id > 0) {
 			cliente = clientService.findOne(id);
-			if (cliente == null) {
-				flash.addFlashAttribute("error", "El ID del cliente no existe en la BBDD!");
+			if(cliente == null) {
+				flash.addFlashAttribute("error", "The client ID does not exist in the system!");
 				return "redirect:/listar";
 			}
+
 		} else {
-			flash.addFlashAttribute("error", "El ID del cliente no puede ser cero!");
+			flash.addFlashAttribute("error", "The client ID can not be zero!");
 			return "redirect:/listar";
 		}
-		model.put("cliente", cliente);
-		model.put("titulo", "Editar Cliente");
+		model.put("client", cliente);
+		model.put("title", "Edit a Cliente");
 		return "form";
 	}
 
-	//@RequestMapping(value = "/form", method = RequestMethod.POST)
-//	@PostMapping(value = "/form")
-//	public String guardar(@Valid Client cliente, BindingResult result, Model model,
-//			@RequestParam("file") MultipartFile foto, RedirectAttributes flash, SessionStatus status) {
-//
-//		if (result.hasErrors()) {
-//			model.addAttribute("titulo", "Formulario de Cliente");
-//			return "form";
-//		}
-//
-//		if (!foto.isEmpty()) {
-//
-//			if (cliente.getId() != null && cliente.getId() > 0 && cliente.getFoto() != null
-//					&& cliente.getFoto().length() > 0) {
-//
-//				uploadFileService.delete(cliente.getFoto());
-//			}
-//
-//			String uniqueFilename = null;
-//			try {
-//				uniqueFilename = uploadFileService.copy(foto);
-//			} catch (IOException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//
-//			flash.addFlashAttribute("info", "Has subido correctamente '" + uniqueFilename + "'");
-//
-//			cliente.setFoto(uniqueFilename);
-//
-//		}
-//
-//		String mensajeFlash = (cliente.getId() != null) ? "Cliente editado con éxito!" : "Cliente creado con éxito!";
-//
-//		clienteService.save(cliente);
-//		status.setComplete();
-//		flash.addFlashAttribute("success", mensajeFlash);
-//		return "redirect:listar";
-//	}
+	@PostMapping("/form")
+	public String guardar(@Valid Client cliente, BindingResult result, Model model, @RequestParam("file") MultipartFile photo,
+						  RedirectAttributes flash, SessionStatus status) {
 
-//	@RequestMapping(value = "/eliminar/{id}")
-//	public String eliminar(@PathVariable(value = "id") Long id, RedirectAttributes flash) {
-//
-//		if (id > 0) {
-//			Cliente cliente = clienteService.findOne(id);
-//
-//			clienteService.delete(id);
-//			flash.addFlashAttribute("success", "Cliente eliminado con éxito!");
-//
-//			if (uploadFileService.delete(cliente.getFoto())) {
-//				flash.addFlashAttribute("info", "Foto " + cliente.getFoto() + " eliminada con exito!");
-//			}
-//
-//		}
-//		return "redirect:/listar";
-//	}
+		if (result.hasErrors()) {
+			model.addAttribute("title", "Client Form");
+			return "form";
+		}
+		
+		if (!photo.isEmpty()) {
+			
+			if(cliente.getId() !=null 
+					&& cliente.getId() > 0
+					&& cliente.getPhoto()!=null
+					&& cliente.getPhoto().length() > 0) {
+				
+				uploadFileService.delete(cliente.getPhoto());
+			}
+			
+			String uniqueFileName = null;
+				
+			try {
+
+				uniqueFileName = uploadFileService.copy(photo);
+
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+			flash.addFlashAttribute("info", "Photo loaded successfully '" + uniqueFileName + "'");
+
+			cliente.setPhoto(uniqueFileName);;
+
+		}
+		
+		String flashMessage = (cliente.getId() != null)? "Client has been edited successfully!" : "Client has been created successfully!";
+
+		clientService.save(cliente);
+		status.setComplete();
+		flash.addFlashAttribute("success", flashMessage);
+
+		return "redirect:listar";
+	}
+	
+	@GetMapping("/delete/{id}")
+	public String eliminar(@PathVariable("id") Long id, RedirectAttributes flash) {
+		
+		if(id > 0) {
+			
+			Client cliente = clientService.findOne(id);
+
+			clientService.delete(id);
+			flash.addFlashAttribute("success", "Client deleted successfully!");
+
+			if (uploadFileService.delete(cliente.getPhoto())) {
+				flash.addFlashAttribute("info", "Foto " + cliente.getPhoto() + " eliminada con exito!");
+			}
+
+
+		}
+		return "redirect:/listar";
+	}
 }

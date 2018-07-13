@@ -11,9 +11,9 @@
 			<div class="card-header" th:text="${title}"></div>
 			<div class="card-body">
 			
-				<img th:if="${#strings.length(client.foto) > 0}" class="img-thumbnail rounded float-left"
-					style="max-width: 25%;" th:src="@{'/uploads/' + ${client.foto}}"
-					th:alt="${cliente.foto}" />
+				<img th:if="${#strings.length(client.photo) > 0}" class="img-thumbnail rounded float-left"
+					style="max-width: 25%;" th:src="@{'/uploads/' + ${client.photo}}"
+					th:alt="${client.photo}" />
 
 				<ul class="list-group">
 					<li class="list-group-item active" th:text="${client.name}"></li>

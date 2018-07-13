@@ -1,9 +1,25 @@
 package com.fral.spring.billing.config;
 
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
-public class MvcConfig extends WebMvcConfigurerAdapter {
+public class MvcConfig implements WebMvcConfigurer {
+
+	//OVERRIDE the required method, since we do not need, there is no implementation.
+/*private final Logger log = LoggerFactory.getLogger(getClass());
+	
+	@Override
+	public void addResourceHandlers(ResourceHandlerRegistry registry) {
+		// TODO Auto-generated method stub
+		super.addResourceHandlers(registry);
+		
+		String resourcePath = Paths.get("uploads").toAbsolutePath().toUri().toString();
+		log.info(resourcePath);
+		
+		registry.addResourceHandler("/uploads/**")
+		.addResourceLocations(resourcePath);
+		
+	}*/
 
 }

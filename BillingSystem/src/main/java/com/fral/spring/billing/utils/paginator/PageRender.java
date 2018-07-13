@@ -5,55 +5,65 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 
+import com.fral.spring.billing.utils.paginator.PageItem;
+
 public class PageRender<T> {
 
 	private String url;
 	private Page<T> page;
 	
 	private int totalPages;
+	
 	private int itemsPerPage;
+	
 	private int currentPage;
+	
 	private List<PageItem> pages;
 	
 	public PageRender(String url, Page<T> page) {
 		this.url = url;
 		this.page = page;
-		this.pages = new ArrayList<>();
+		this.pages = new ArrayList<PageItem>();
 		
-		int from, to;
-		if (totalPages <= itemsPerPage) {
-			from = 1;
-			to = totalPages;
+		itemsPerPage = page.getSize();
+		totalPages = page.getTotalPages();
+		currentPage = page.getNumber() + 1;
+		
+		int desde, hasta;
+		if(totalPages <= itemsPerPage) {
+			desde = 1;
+			hasta = totalPages;
 		} else {
-			if (totalPages <= itemsPerPage/2) {
-				from = 1;
-				to = itemsPerPage;
-			} else if (currentPage >= totalPages - itemsPerPage/2) {
-				from = totalPages - itemsPerPage + 1;
-				to = itemsPerPage;
+			if(currentPage <= itemsPerPage/2) {
+				desde = 1;
+				hasta = itemsPerPage;
+			} else if(currentPage >= totalPages - itemsPerPage/2 ) {
+				desde = totalPages - itemsPerPage + 1;
+				hasta = itemsPerPage;
 			} else {
-				from = currentPage - itemsPerPage/2;
-				to = itemsPerPage;
+				desde = currentPage -itemsPerPage/2;
+				hasta = itemsPerPage;
 			}
 		}
 		
-		for (int i = 0; i < to; i++) {
-			pages.add(new PageItem(from + i, currentPage == from+1));
+		for(int i=0; i < hasta; i++) {
+			pages.add(new PageItem(desde + i, currentPage == desde+i));
 		}
+
 	}
-	
+
 	public String getUrl() {
 		return url;
 	}
-	
+
 	public int getTotalPages() {
 		return totalPages;
 	}
-	
-	public int getCurrentPage() {
+
+	public int getPaginaActual() {
 		return currentPage;
 	}
-	
+
 	public List<PageItem> getPages() {
 		return pages;
 	}
@@ -66,11 +76,11 @@ public class PageRender<T> {
 		return page.isLast();
 	}
 	
-	public boolean hasNext() {
+	public boolean isHasNext() {
 		return page.hasNext();
 	}
 	
-	public boolean hasPrevious() {
+	public boolean isHasPrevious() {
 		return page.hasPrevious();
 	}
- }
+}

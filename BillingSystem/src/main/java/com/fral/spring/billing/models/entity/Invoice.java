@@ -28,13 +28,18 @@ public class Invoice implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+	
 	private String description;
+	
 	private String observation;
+	
 	@Temporal(TemporalType.DATE)
 	private Date createdAt;
+	
 	@ManyToOne(fetch=FetchType.LAZY)
 	private Client client;
-	@OneToMany(fetch=FetchType.LAZY, cascade=CascadeType.ALL)
+	
+	@OneToMany(fetch=FetchType.LAZY, cascade=CascadeType.ALL, orphanRemoval=true)
 	@JoinColumn(name="invoice_id")
 	private List<InvoiceItem> invoiceItems;
 	

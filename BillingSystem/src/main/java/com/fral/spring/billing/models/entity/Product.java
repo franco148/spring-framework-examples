@@ -20,10 +20,14 @@ public class Product implements Serializable {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
+	
 	private String name;
+	
 	private Double price;
+	
 	@Temporal(TemporalType.DATE)
 	private Date createdAt;
+	
 	public Long getId() {
 		return id;
 	}
