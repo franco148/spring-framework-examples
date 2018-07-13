@@ -12,7 +12,7 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
 		// TODO Auto-generated method stub
 		super.addResourceHandlers(registry);
 		registry.addResourceHandler("/uploads/**")
-		.addResourceLocations("file:/D:/TMP/SpringFrameworkCourse/uploads/");
+		.addResourceLocations("file:/D:/CODE/TMP/SpringFrameworkCourse/uploads/");
 		
 	}
 
