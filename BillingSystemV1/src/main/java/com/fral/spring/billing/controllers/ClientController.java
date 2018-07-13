@@ -1,5 +1,9 @@
 package com.fral.spring.billing.controllers;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
 
 import javax.validation.Valid;
@@ -17,6 +21,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.fral.spring.billing.models.Client;
@@ -92,11 +97,30 @@ public class ClientController {
 	}
 
 	@PostMapping("/form")
-	public String guardar(@Valid Client cliente, BindingResult result, Model model, RedirectAttributes flash, SessionStatus status) {
+	public String guardar(@Valid Client cliente, BindingResult result, Model model, @RequestParam("file") MultipartFile photo,
+						  RedirectAttributes flash, SessionStatus status) {
 
 		if (result.hasErrors()) {
 			model.addAttribute("title", "Client Form");
 			return "form";
+		}
+		
+		if (!photo.isEmpty()) {
+			String rootPath = "D://CODE//TMP//SpringFrameworkCourse//uploads";
+			
+			try {
+
+				byte[] bytes = photo.getBytes();
+				Path rutaCompleta = Paths.get(rootPath + "//" + photo.getOriginalFilename());
+				Files.write(rutaCompleta, bytes);
+				flash.addFlashAttribute("info", "Has subido correctamente '" + photo.getOriginalFilename() + "'");
+
+				cliente.setPhoto(photo.getOriginalFilename());
+
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
 		}
 		
 		String flashMessage = (cliente.getId() != null)? "Client has been edited successfully!" : "Client has been created successfully!";
