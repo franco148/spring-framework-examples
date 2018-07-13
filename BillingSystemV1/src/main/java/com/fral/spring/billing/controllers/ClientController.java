@@ -1,5 +1,6 @@
 package com.fral.spring.billing.controllers;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
@@ -44,6 +45,7 @@ public class ClientController {
 	private ClientService clientService;
 	
 	private final Logger log = LoggerFactory.getLogger(getClass());
+	private final static String UPLOADS_FOLDER = "uploads";
 	
 	
 	@GetMapping(value="/uploads/{filename:.+}")
@@ -136,6 +138,19 @@ public class ClientController {
 		}
 		
 		if (!photo.isEmpty()) {
+			
+			if(cliente.getId() !=null 
+					&& cliente.getId() > 0
+					&& cliente.getPhoto()!=null
+					&& cliente.getPhoto().length() > 0) {
+				
+				Path rootPath = Paths.get(UPLOADS_FOLDER).resolve(cliente.getPhoto()).toAbsolutePath();
+				File archivo = rootPath.toFile();
+				
+				if(archivo.exists() && archivo.canRead()) {
+					archivo.delete();
+				}
+			}
 						
 			// SECOND VERSION: Absolute and external directory
 			String uniqueFilename = UUID.randomUUID().toString() + "_" + photo.getOriginalFilename();
@@ -183,8 +198,21 @@ public class ClientController {
 	public String eliminar(@PathVariable("id") Long id, RedirectAttributes flash) {
 		
 		if(id > 0) {
+			
+			Client cliente = clientService.findOne(id);
+			
 			clientService.delete(id);
 			flash.addFlashAttribute("success", "Client deleted successfully!");
+			
+			Path rootPath = Paths.get(UPLOADS_FOLDER).resolve(cliente.getPhoto()).toAbsolutePath();
+			File archivo = rootPath.toFile();
+			
+			if(archivo.exists() && archivo.canRead()) {
+				if(archivo.delete()) {
+					flash.addFlashAttribute("info", "Photo " + cliente.getPhoto() + " removed successfully!");
+				}
+			}
+
 		}
 		return "redirect:/listar";
 	}
