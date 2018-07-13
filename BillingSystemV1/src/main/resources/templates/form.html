@@ -17,7 +17,7 @@
 					</ul>
 				</div>
 
-				<form th:action="@{/form}" th:object="${client}" method="post">
+				<form th:action="@{/form}" th:object="${client}" method="post" enctype="multipart/form-data">
 					<div class="form-group row">
 						<label for="name" class="col-sm-2 col-form-label">Name</label>
 						<div class="col-sm-6">
