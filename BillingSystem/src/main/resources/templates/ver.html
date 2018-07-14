@@ -11,6 +11,12 @@
 			<div class="card-header" th:text="${title}"></div>
 			<div class="card-body">
 			
+				<h4 class="card-title">
+					<a class="btn btn-primary btn-xs"
+						th:href="@{'/invoices/form/' + ${client.id}}"
+						th:text="'Create invoice'"></a>
+				</h4>
+			
 				<img th:if="${#strings.length(client.photo) > 0}" class="img-thumbnail rounded float-left"
 					style="max-width: 25%;" th:src="@{'/uploads/' + ${client.photo}}"
 					th:alt="${client.photo}" />
@@ -21,6 +27,39 @@
 					<li class="list-group-item" th:text="${client.email}"></li>
 					<li class="list-group-item" th:text="${client.createdAt}"></li>
 				</ul>
+				
+				<div th:if="${#lists.isEmpty(client.invoices)}"
+					class="alert alert-info my-4"
+					th:text="'There is no invoices assigned to the client ' + ${client.name} + ' ' + ${client.lastName}"></div>
+
+				<table th:if="${not #lists.isEmpty(client.invoices)}"
+					class="table table-bordered table-striped my-4">
+					<thead class="thead-inverse">
+						<tr>
+							<th>folio</th>
+							<th>description</th>
+							<th>date</th>
+							<th>total</th>
+							<th>see</th>
+							<th>delete</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="factura: ${client.invoices}">
+							<td th:text="${factura.id}"></td>
+							<td th:text="${factura.description}"></td>
+							<td th:text="${factura.createdAt}"></td>
+							<td th:text="${factura.total}"></td>
+							<td><a class="btn btn-primary btn-xs"
+								th:href="@{'/invoices/ver/' + ${factura.id}}" th:text="'detail'"></a></td>
+							<td><a class="btn btn-danger btn-xs"
+								th:href="@{'/invoices/delete/' + ${factura.id}}"
+								th:text="'delete'"
+								onclick="return confirm('Are you sure you want to delete the invoice?');"></a></td>
+						</tr>
+					</tbody>
+
+				</table>
 
 			</div>
 		</div>
