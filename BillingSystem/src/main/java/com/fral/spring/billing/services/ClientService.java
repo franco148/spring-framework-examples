@@ -31,4 +31,5 @@ public interface ClientService {
 
 	void deleteInvoice(Long id);
 
+	Invoice fetchInvoiceByIdWithClientWhithInvoiceItemsWithProduct(Long id);
 }

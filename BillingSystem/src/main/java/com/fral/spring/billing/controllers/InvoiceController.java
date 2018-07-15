@@ -90,7 +90,7 @@ public class InvoiceController {
 
 		if (itemId == null || itemId.length == 0) {
 			model.addAttribute("title", "Create Invoice");
-			model.addAttribute("error", "Error: Invoice can not have lines!");
+			model.addAttribute("error", "Error: Invoice should have lines!");
 			return "invoice/form";
 		}
 

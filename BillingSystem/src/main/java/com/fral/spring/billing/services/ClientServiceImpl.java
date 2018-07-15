@@ -1,7 +1,5 @@
 package com.fral.spring.billing.services;
 
-import static org.assertj.core.api.Assertions.in;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -100,6 +98,13 @@ public class ClientServiceImpl implements ClientService {
 	public void deleteInvoice(Long id) {
 		// TODO Auto-generated method stub
 		invoiceDao.deleteById(id);
+	}
+
+	@Override
+	@Transactional(readOnly=true)
+	public Invoice fetchInvoiceByIdWithClientWhithInvoiceItemsWithProduct(Long id) {
+		// TODO Auto-generated method stub
+		return invoiceDao.fetchByIdWithClientWhithInvoiceItemWithProduct(id);
 	}
 
 }
