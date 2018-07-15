@@ -20,19 +20,19 @@
 
 				<ul class="list-group my-2">
 					<li class="list-group-item list-group-item-primary"
-						th:text="'Datos del cliente'"></li>
+						th:text="'Client Details'"></li>
 					<li class="list-group-item" th:text="${invoice.client}"></li>
 					<li class="list-group-item" th:text="${invoice.client.email}"></li>
 				</ul>
 
 				<ul class="list-group my-2">
 					<li class="list-group-item list-group-item-success"
-						th:text="'Datos de la factura'"></li>
+						th:text="'Invoice Details'"></li>
 					<li class="list-group-item" th:text="'Folio: ' + ${invoice.id}"></li>
 					<li class="list-group-item"
-						th:text="'Descripción: ' + ${invoice.description}"></li>
+						th:text="'Description: ' + ${invoice.description}"></li>
 					<li class="list-group-item"
-						th:text="'Fecha: ' + ${invoice.createdAt}"></li>
+						th:text="'Date: ' + ${invoice.createdAt}"></li>
 				</ul>
 				<div class="alert alert-info my-4"
 					th:if="${#lists.isEmpty(invoice.invoiceItems)}"

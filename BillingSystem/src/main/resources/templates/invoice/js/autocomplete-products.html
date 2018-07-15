@@ -33,13 +33,13 @@
 						return false;
 					}
 					
-					var linea = $("#plantillaItemsFactura").html();
+					var linea = $("#invoiceItemsTemplate").html();
 					
 					linea = linea.replace(/{ID}/g, ui.item.value);
 					linea = linea.replace(/{NAME}/g, ui.item.label);
 					linea = linea.replace(/{PRICE}/g, ui.item.price);
 					
-					$("#cargarItemProductos tbody").append(linea);
+					$("#loadProductItems tbody").append(linea);
 					itemsHelper.calculateAmount(ui.item.value, ui.item.price, 1);
 
 					return false;
@@ -47,7 +47,7 @@
 			});
 			
 			$("form").submit(function(){
-				$("#plantillaItemsFactura").remove();
+				$("#invoiceItemsTemplate").remove();
 				return;
 			});
 
