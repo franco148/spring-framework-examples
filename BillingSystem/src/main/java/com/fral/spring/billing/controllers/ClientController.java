@@ -25,10 +25,10 @@ import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.fral.spring.billing.models.Client;
+import com.fral.spring.billing.models.entity.Client;
 import com.fral.spring.billing.services.ClientService;
 import com.fral.spring.billing.services.UploadFileService;
-import com.fral.spring.billing.util.paginator.PageRender;
+import com.fral.spring.billing.utils.paginator.PageRender;
 
 @Controller
 @SessionAttributes("client")
@@ -75,7 +75,7 @@ public class ClientController {
 	@GetMapping("/listar")
 	public String listar(@RequestParam(name="page", defaultValue="0") int page, Model model) {
 		
-		Pageable pageRequest = new PageRequest(page, 4);
+		Pageable pageRequest = PageRequest.of(page, 4);
 		
 		Page<Client> clientes = clientService.findAll(pageRequest);
 		
@@ -138,34 +138,9 @@ public class ClientController {
 			}
 			
 			String uniqueFileName = null;
-						
-			// SECOND VERSION: Absolute and external directory
-//			String uniqueFilename = UUID.randomUUID().toString() + "_" + photo.getOriginalFilename();
-//			Path rootPath = Paths.get("uploads").resolve(uniqueFilename);
-//
-//			Path rootAbsolutPath = rootPath.toAbsolutePath();
-//			
-//			log.info("rootPath: " + rootPath);
-//			log.info("rootAbsolutPath: " + rootAbsolutPath);
-			
+				
 			try {
 
-				// FIRST VERSION: Uploads to external directory
-//				String rootPath = "D://CODE//TMP//SpringFrameworkCourse//uploads";
-//				byte[] bytes = photo.getBytes();
-//				Path rutaCompleta = Paths.get(rootPath + "//" + photo.getOriginalFilename());
-//				Files.write(rutaCompleta, bytes);
-//				flash.addFlashAttribute("info", "Has subido correctamente '" + photo.getOriginalFilename() + "'");
-//
-//				cliente.setPhoto(photo.getOriginalFilename());
-				
-				// SECOND VERSION: Absolute and external directory
-//				Files.copy(photo.getInputStream(), rootAbsolutPath);
-//				
-//				flash.addFlashAttribute("info", "Image loaded successfully '" + uniqueFilename + "'");
-//
-//				cliente.setPhoto(uniqueFilename);
-				
 				uniqueFileName = uploadFileService.copy(photo);
 
 			} catch (IOException e) {
