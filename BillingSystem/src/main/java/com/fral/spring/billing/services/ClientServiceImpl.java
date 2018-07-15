@@ -73,12 +73,14 @@ public class ClientServiceImpl implements ClientService {
 	}
 
 	@Override
+	@Transactional
 	public void saveInvoice(Invoice invoice) {
 		// TODO Auto-generated method stub
 		invoiceDao.save(invoice);
 	}
 
 	@Override
+	@Transactional(readOnly=true)
 	public Product findProductoById(Long id) {
 		// TODO Auto-generated method stub
 		Optional<Product> productFromDb = productDao.findById(id);
@@ -86,6 +88,7 @@ public class ClientServiceImpl implements ClientService {
 	}
 
 	@Override
+	@Transactional(readOnly=true)
 	public Invoice findInvoiceById(Long id) {
 		// TODO Auto-generated method stub
 		Optional<Invoice> invoiceFromDb = invoiceDao.findById(id);
@@ -93,6 +96,7 @@ public class ClientServiceImpl implements ClientService {
 	}
 
 	@Override
+	@Transactional
 	public void deleteInvoice(Long id) {
 		// TODO Auto-generated method stub
 		invoiceDao.deleteById(id);

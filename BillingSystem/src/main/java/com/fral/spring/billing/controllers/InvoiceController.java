@@ -79,9 +79,9 @@ public class InvoiceController {
 
 	@PostMapping("/form")
 	public String guardar(@Valid Invoice factura, BindingResult result, Model model,
-			@RequestParam(name = "item_id[]", required = false) Long[] itemId,
-			@RequestParam(name = "cantidad[]", required = false) Integer[] cantidad, RedirectAttributes flash,
-			SessionStatus status) {
+			              @RequestParam(name = "item_id[]", required = false) Long[] itemId,
+			              @RequestParam(name = "cantidad[]", required = false) Integer[] cantidad, RedirectAttributes flash,
+			              SessionStatus status) {
 
 		if (result.hasErrors()) {
 			model.addAttribute("title", "Create Invoice");
