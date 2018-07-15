@@ -15,7 +15,7 @@
 
 				<h4 class="card-title">
 					<a th:href="@{'/ver/' + ${invoice.client.id}}"
-						class="btn btn-light btn-xs">&laquo; Back to previous page</a>
+						class="btn btn-light btn-xs">&laquo; previous page</a>
 				</h4>
 
 				<ul class="list-group my-2">
@@ -71,12 +71,12 @@
 							th:if="${not #strings.isEmpty(invoice.observation)}"></p>
 						<h4 class="card-title"
 							th:if="${#strings.isEmpty(invoice.observation)}"
-							th:text="'No tiene observaciones'"></h4>
+							th:text="'There is not observations.'"></h4>
 					</div>
 				</div>
 
 				<a th:href="@{'/ver/' + ${invoice.client.id}}"
-					class="btn btn-light btn-xs">&laquo; Back to previous page</a>
+					class="btn btn-light btn-xs">&laquo; previous page</a>
 
 			</div>
 		</div>
