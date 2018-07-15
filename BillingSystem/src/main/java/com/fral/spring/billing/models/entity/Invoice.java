@@ -77,8 +77,16 @@ public class Invoice implements Serializable {
 	}
 	public void setClient(Client client) {
 		this.client = client;
-	}
+	}	
 	
+	public List<InvoiceItem> getInvoiceItems() {
+		return invoiceItems;
+	}
+
+	public void setInvoiceItems(List<InvoiceItem> invoiceItems) {
+		this.invoiceItems = invoiceItems;
+	}
+
 	public void addItem(InvoiceItem item) {
 		this.invoiceItems.add(item);
 	}
