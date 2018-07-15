@@ -5,11 +5,11 @@
 	<script type="text/javascript" th:fragment="javascript">
 		$(document).ready(function() {
 
-			$("#buscar_producto").autocomplete({
+			$("#find_product").autocomplete({
 
 				source : function(request, response) {
 					$.ajax({
-						url : "/factura/cargar-productos/" + request.term,
+						url : "/invoices/load-products/" + request.term,
 						dataType : "json",
 						data : {
 							term : request.term
@@ -18,29 +18,29 @@
 							response($.map(data, function(item) {
 								return {
 									value : item.id,
-									label : item.nombre,
-									precio : item.precio,
+									label : item.name,
+									price : item.price,
 								};
 							}));
 						},
 					});
 				},
 				select : function(event, ui) {
-					//$("#buscar_producto").val(ui.item.label);
+					//$("#find_product").val(ui.item.label);
 					
-					if(itemsHelper.hasProducto(ui.item.value)){
-						itemsHelper.incrementaCantidad(ui.item.value, ui.item.precio);
+					if(itemsHelper.hasProduct(ui.item.value)){
+						itemsHelper.incrementAmount(ui.item.value, ui.item.price);
 						return false;
 					}
 					
 					var linea = $("#plantillaItemsFactura").html();
 					
 					linea = linea.replace(/{ID}/g, ui.item.value);
-					linea = linea.replace(/{NOMBRE}/g, ui.item.label);
-					linea = linea.replace(/{PRECIO}/g, ui.item.precio);
+					linea = linea.replace(/{NAME}/g, ui.item.label);
+					linea = linea.replace(/{PRICE}/g, ui.item.price);
 					
 					$("#cargarItemProductos tbody").append(linea);
-					itemsHelper.calcularImporte(ui.item.value, ui.item.precio, 1);
+					itemsHelper.calculateAmount(ui.item.value, ui.item.price, 1);
 
 					return false;
 				}
@@ -54,35 +54,35 @@
 		});
 		
 		var itemsHelper = {
-			calcularImporte: function(id, precio, cantidad){
-				$("#total_importe_" + id).html(parseInt(precio) * parseInt(cantidad));
-				this.calcularGranTotal();
+			calculateAmount: function(id, price, amount){
+				$("#total_amount_" + id).html(parseInt(price) * parseInt(amount));
+				this.calculateWholeTotal();
 			},
-			hasProducto: function(id){
+			hasProduct: function(id){
 				
-				var resultado = false;
+				var result = false;
 				
 				$('input[name="item_id[]"]').each(function(){
 					if(parseInt(id) == parseInt($(this).val()) ){
-						resultado = true;
+						result = true;
 					}
 				});
 				
-				return resultado;
+				return result;
 			},
-			incrementaCantidad: function(id, precio){
-				var cantidad = $("#cantidad_" + id).val() ? parseInt($("#cantidad_" + id).val()) : 0;
-				$("#cantidad_" + id).val(++cantidad);
-				this.calcularImporte(id, precio, cantidad);
+			incrementAmount: function(id, price){
+				var amount = $("#amount_" + id).val() ? parseInt($("#amount_" + id).val()) : 0;
+				$("#amount_" + id).val(++amount);
+				this.calculateAmount(id, price, amount);
 			},
-			eliminarLineaFactura: function(id){
+			deleteInvoiceItem: function(id){
 				$("#row_" + id).remove();
-				this.calcularGranTotal();
+				this.calculateWholeTotal();
 			},
-			calcularGranTotal: function(){
+			calculateWholeTotal: function(){
 				var total = 0;
 				
-				$('span[id^="total_importe_"]').each(function(){
+				$('span[id^="total_amount_"]').each(function(){
 					total += parseInt($(this).html());
 				});
 				
