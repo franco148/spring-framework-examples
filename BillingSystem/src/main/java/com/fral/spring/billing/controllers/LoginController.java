@@ -13,6 +13,7 @@ public class LoginController {
 
 	@GetMapping("/login")
 	public String login(@RequestParam(value="error", required=false) String error,
+					    @RequestParam(value="logout", required = false) String logout,
 			            Model model, Principal principal, RedirectAttributes flash) {
 		
 		if (principal != null) {
@@ -24,6 +25,9 @@ public class LoginController {
 			model.addAttribute("error", "Error when loggin in: User name or password are incorrect, please try again!");
 		}
 
+		if(logout != null) {
+			model.addAttribute("success", "You have logged out successfully!");
+		}
 		
 		return "login";
 	}
