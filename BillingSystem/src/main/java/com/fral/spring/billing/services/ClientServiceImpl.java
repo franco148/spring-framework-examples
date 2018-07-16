@@ -54,8 +54,7 @@ public class ClientServiceImpl implements ClientService {
 	@Transactional(readOnly = true)
 	public Client findOne(Long id) {
 		
-		Optional<Client> clientFromDb = clientDao.findById(id); 
-		return clientFromDb.isPresent() ? clientFromDb.get() : null;
+		return clientDao.findById(id).orElse(null);
 	}
 	
 	@Override
@@ -87,16 +86,14 @@ public class ClientServiceImpl implements ClientService {
 	@Transactional(readOnly=true)
 	public Product findProductoById(Long id) {
 		// TODO Auto-generated method stub
-		Optional<Product> productFromDb = productDao.findById(id);
-		return  productFromDb.isPresent() ? productFromDb.get() : null;
+		return productDao.findById(id).orElse(null);
 	}
 
 	@Override
 	@Transactional(readOnly=true)
 	public Invoice findInvoiceById(Long id) {
 		// TODO Auto-generated method stub
-		Optional<Invoice> invoiceFromDb = invoiceDao.findById(id);
-		return invoiceFromDb.isPresent() ? invoiceFromDb.get() : null;
+		return invoiceDao.findById(id).orElse(null);
 	}
 
 	@Override
