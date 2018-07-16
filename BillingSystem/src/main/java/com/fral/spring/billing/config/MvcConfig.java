@@ -1,6 +1,7 @@
 package com.fral.spring.billing.config;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
@@ -21,5 +22,11 @@ public class MvcConfig implements WebMvcConfigurer {
 		.addResourceLocations(resourcePath);
 		
 	}*/
+	
+	//Another approach would be create a ErrorController, but since it will not have any logic, this approach is better.
+	public void addViewControllers(ViewControllerRegistry registry) {
+		registry.addViewController("/error_403").setViewName("error_403");
+	}
+
 
 }
