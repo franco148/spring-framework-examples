@@ -2,8 +2,10 @@ package com.fral.spring.billing.controllers;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.Collection;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.apache.commons.logging.Log;
@@ -16,7 +18,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestWrapper;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -82,7 +88,7 @@ public class ClientController {
 	
 	@GetMapping(value= {"/listar", "/"})
 	public String listar(@RequestParam(name="page", defaultValue="0") int page, Model model,
-						Authentication authentication) {
+						Authentication authentication, HttpServletRequest request) {
 		
 		//FIRST APPROACH for getting authenticated user name;
 		if(authentication != null) {
@@ -96,6 +102,34 @@ public class ClientController {
 			logger.info("Using static approach SecurityContextHolder.getContext().getAuthentication(): Usuario autenticado: ".concat(auth.getName()));
 		}
 
+		//GETTING ROLES FIRST APPROACH
+		if(hasRole("ROLE_ADMIN")) {
+			logger.info("Hi ".concat(auth.getName()).concat(" you have access!"));
+		} else {
+			logger.info("Hi ".concat(auth.getName()).concat(" you have NO access!"));
+		}
+
+		/***
+		 * GETTING ROLES SECOND APPROACH
+		 * 
+		 * Second parameter for SecurityContextHolder would be "ROLE_", then in if clause you
+		 * will only need to ask for "ADMIN". If second parameter is empty, then in if
+		 * clause you will need to verify "ROLE_ADMIN"
+		 */
+		SecurityContextHolderAwareRequestWrapper securityContext = new SecurityContextHolderAwareRequestWrapper(request, "");
+		
+		if(securityContext.isUserInRole("ROLE_ADMIN")) {
+			logger.info("Approach with SecurityContextHolderAwareRequestWrapper: Hi ".concat(auth.getName()).concat(" you have access!"));
+		} else {
+			logger.info("Approach with SecurityContextHolderAwareRequestWrapper: Hi ".concat(auth.getName()).concat(" you have no access!"));
+		}
+
+		//GETTING ROLES THRID APPROACH
+		if(request.isUserInRole("ROLE_ADMIN")) {
+			logger.info("Approach with HttpServletRequest: Hi ".concat(auth.getName()).concat(" you have access!"));
+		} else {
+			logger.info("Approach with HttpServletRequest: Hi ".concat(auth.getName()).concat(" you have no access!"));
+		}
 
 		
 		Pageable pageRequest = PageRequest.of(page, 4);
@@ -203,4 +237,39 @@ public class ClientController {
 		}
 		return "redirect:/listar";
 	}
+	
+	
+	private boolean hasRole(String role) {
+		
+		SecurityContext context = SecurityContextHolder.getContext();
+		
+		if(context == null) {
+			return false;
+		}
+		
+		Authentication auth = context.getAuthentication();
+		
+		if(auth == null) {
+			return false;
+		}
+		
+		Collection<? extends GrantedAuthority> authorities = auth.getAuthorities();
+		
+		// SECOND APPROACH
+		return authorities.contains(new SimpleGrantedAuthority(role));
+		
+		/*
+		 * FIRST APPROACH
+		 * for(GrantedAuthority authority: authorities) {
+			if(role.equals(authority.getAuthority())) {
+				logger.info("Hi User ".concat(auth.getName()).concat(" your role is: ".concat(authority.getAuthority())));
+				return true;
+			}
+		}
+		
+		return false;
+		*/
+		
+	}
+
 }
