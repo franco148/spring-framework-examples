@@ -17,6 +17,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -54,7 +56,7 @@ public class ClientController {
 
 	
 	
-	
+	@Secured({"ROLE_USER"})
 	@GetMapping(value="/uploads/{filename:.+}")
 	public ResponseEntity<Resource> seePhoto(@PathVariable String filename) {
 		
@@ -72,6 +74,7 @@ public class ClientController {
 				.body(recurso);
 	}
 	
+	@PreAuthorize("hasRole('ROLE_USER')")//or hasAnyRole if we want to specify more than a role.
 	@GetMapping(value = "/ver/{id}")
 	public String ver(@PathVariable(value = "id") Long id, Map<String, Object> model, RedirectAttributes flash) {
 
@@ -145,6 +148,7 @@ public class ClientController {
 		return "listar";
 	}
 
+	@Secured("ROLE_ADMIN")
 	@GetMapping("/form")
 	public String crear(Map<String, Object> model) {
 
@@ -154,6 +158,7 @@ public class ClientController {
 		return "form";
 	}
 	
+	@Secured("ROLE_ADMIN")
 	@GetMapping("/form/{id}")
 	public String editar(@PathVariable(value="id") Long id, Map<String, Object> model, RedirectAttributes flash) {
 		
@@ -175,6 +180,7 @@ public class ClientController {
 		return "form";
 	}
 
+	@Secured("ROLE_ADMIN")
 	@PostMapping("/form")
 	public String guardar(@Valid Client cliente, BindingResult result, Model model, @RequestParam("file") MultipartFile photo,
 						  RedirectAttributes flash, SessionStatus status) {
@@ -219,6 +225,7 @@ public class ClientController {
 		return "redirect:listar";
 	}
 	
+	@Secured("ROLE_ADMIN")
 	@GetMapping("/delete/{id}")
 	public String eliminar(@PathVariable("id") Long id, RedirectAttributes flash) {
 		
