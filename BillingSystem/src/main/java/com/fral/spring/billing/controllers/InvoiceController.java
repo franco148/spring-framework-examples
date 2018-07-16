@@ -40,7 +40,7 @@ public class InvoiceController {
 	@GetMapping("/ver/{id}")
 	public String ver(@PathVariable(value = "id") Long id, Model model, RedirectAttributes flash) {
 
-		Invoice factura = clientService.findInvoiceById(id);
+		Invoice factura = clientService.fetchInvoiceByIdWithClientWhithInvoiceItemsWithProduct(id); //clientService.findInvoiceById(id);
 
 		if (factura == null) {
 			flash.addFlashAttribute("error", "Invoice does not exist in the system!");
