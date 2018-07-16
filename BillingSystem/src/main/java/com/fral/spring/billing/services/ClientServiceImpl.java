@@ -57,6 +57,12 @@ public class ClientServiceImpl implements ClientService {
 		Optional<Client> clientFromDb = clientDao.findById(id); 
 		return clientFromDb.isPresent() ? clientFromDb.get() : null;
 	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	public Client fetchByIdWithInvoices(Long id) {
+		return clientDao.fetchByIdWithFacturas(id);
+	}
 
 	@Override
 	public void delete(Long id) {
@@ -106,5 +112,4 @@ public class ClientServiceImpl implements ClientService {
 		// TODO Auto-generated method stub
 		return invoiceDao.fetchByIdWithClientWhithInvoiceItemWithProduct(id);
 	}
-
 }
