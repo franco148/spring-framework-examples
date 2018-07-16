@@ -6,6 +6,8 @@ import java.util.Map;
 
 import javax.validation.Valid;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
@@ -13,6 +15,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -39,6 +43,10 @@ public class ClientController {
 
 	@Autowired
 	private UploadFileService uploadFileService;
+	
+	protected final Log logger = LogFactory.getLog(this.getClass());
+
+	
 	
 	
 	@GetMapping(value="/uploads/{filename:.+}")
@@ -73,7 +81,22 @@ public class ClientController {
 	}
 	
 	@GetMapping(value= {"/listar", "/"})
-	public String listar(@RequestParam(name="page", defaultValue="0") int page, Model model) {
+	public String listar(@RequestParam(name="page", defaultValue="0") int page, Model model,
+						Authentication authentication) {
+		
+		//FIRST APPROACH for getting authenticated user name;
+		if(authentication != null) {
+			logger.info("Hi authenticated user, your username is: ".concat(authentication.getName()));
+		}
+		
+		//SECOND APPROACH for getting authenticated user name;
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+		if(auth != null) {
+			logger.info("Using static approach SecurityContextHolder.getContext().getAuthentication(): Usuario autenticado: ".concat(auth.getName()));
+		}
+
+
 		
 		Pageable pageRequest = PageRequest.of(page, 4);
 		
