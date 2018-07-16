@@ -16,7 +16,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 
-		http.authorizeRequests().antMatchers("/", "/css/**", "/js/**", "/images/**", "/listar").permitAll()
+		http.authorizeRequests().antMatchers("/", "/css/**", "/js/**", "/images/**", "/listar", "/h2-console/**").permitAll()
 			.antMatchers("/ver/**").hasAnyRole("USER")
 			.antMatchers("/uploads/**").hasAnyRole("USER")
 			.antMatchers("/form/**").hasAnyRole("ADMIN")
@@ -24,9 +24,15 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 			.antMatchers("/invoices/**").hasAnyRole("ADMIN")
 			.anyRequest().authenticated()
 			.and()
-			.formLogin().permitAll()
+				.formLogin()
+					.loginPage("/login")
+				.permitAll()
 			.and()
 			.logout().permitAll();
+		
+		//The following lines should not be enabled. Comment them!
+		http.csrf().disable();
+		http.headers().frameOptions().disable();
 	}
 
 	@Autowired
