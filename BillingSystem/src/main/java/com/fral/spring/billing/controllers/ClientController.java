@@ -61,7 +61,7 @@ public class ClientController {
 	@GetMapping(value = "/ver/{id}")
 	public String ver(@PathVariable(value = "id") Long id, Map<String, Object> model, RedirectAttributes flash) {
 
-		Client cliente = clientService.findOne(id);
+		Client cliente = clientService.fetchByIdWithInvoices(id);
 		if (cliente == null) {
 			flash.addFlashAttribute("error", "Client does not exist in the system.");
 			return "redirect:/listar";
