@@ -23,6 +23,7 @@ public class MvcConfig implements WebMvcConfigurer {
 		
 	}*/
 	
+	//Another approach would be create a ErrorController, but since it will not have any logic, this approach is better.
 	public void addViewControllers(ViewControllerRegistry registry) {
 		registry.addViewController("/error_403").setViewName("error_403");
 	}
