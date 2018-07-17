@@ -1,6 +1,8 @@
 package com.fral.spring.billing.handlers.filter;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,12 +15,14 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
@@ -71,9 +75,17 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 			Authentication authResult) throws IOException, ServletException {
 
 		String userName = authResult.getName(); // or (((User)auth.getPrincipal()).getUsername());
+		
+		Collection<? extends GrantedAuthority> roles = authResult.getAuthorities();
+		Claims claims = Jwts.claims();
+		claims.put("authorities", new ObjectMapper().writeValueAsString(roles));
+		
 		String token = Jwts.builder()
+						   .setClaims(claims)
 						   .setSubject(userName)
 						   .signWith(SignatureAlgorithm.HS512, "My.Jwt.Secret.Key".getBytes())
+						   .setIssuedAt(new Date())
+						   .setExpiration(new Date(System.currentTimeMillis() + 3600000))
 						   .compact();
 		
 		response.addHeader("Authorization", "Bearer ".concat(token));
