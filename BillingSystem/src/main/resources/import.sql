@@ -34,3 +34,11 @@ INSERT INTO products (name, price, created_at) VALUES('Sony Notebook Z110', 370,
 INSERT INTO products (name, price, created_at) VALUES('Hewlett Packard Multifuncional F2280', 690, NOW());
 INSERT INTO products (name, price, created_at) VALUES('Bianchi Bicicleta Aro 26', 690, NOW());
 INSERT INTO products (name, price, created_at) VALUES('Mica Comoda 5 Cajones', 290, NOW());
+
+/* Creamos algunos usuarios con sus roles */
+INSERT INTO users (username, password, enabled) VALUES ('franco','$2a$10$MMUeXTxSqhf4f7sdCmlrv.shB2VYTtKGLDNo0LJx6yxrPlSgJNbPy',1);
+INSERT INTO users (username, password, enabled) VALUES ('admin','$2a$10$gPCkOt2LzmM7EpYUN8AMHuQLIh0wZSNyy5jRMVcXz61.gvRaPIGUW',1);
+
+INSERT INTO authorities (user_id, authority) VALUES (1,'ROLE_USER');
+INSERT INTO authorities (user_id, authority) VALUES (2,'ROLE_ADMIN');
+INSERT INTO authorities (user_id, authority) VALUES (2,'ROLE_USER');

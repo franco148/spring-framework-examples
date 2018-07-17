@@ -15,6 +15,7 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.fral.spring.billing.handlers.auth.LoginSuccessHandler;
+import com.fral.spring.billing.services.JpaUserDetailsService;
 
 @EnableGlobalMethodSecurity(securedEnabled=true, prePostEnabled=true)
 @Configuration
@@ -23,8 +24,11 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired
 	private LoginSuccessHandler successHandler;
 	
+//	@Autowired
+//	private DataSource dataSource;
+	
 	@Autowired
-	private DataSource dataSource;
+	private JpaUserDetailsService userDetailsService;
 	
 	@Autowired
 	private BCryptPasswordEncoder passwordEncoder;
@@ -51,7 +55,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 			.and()
 			.exceptionHandling().accessDeniedPage("/error_403");
 		
-		//The following lines should not be enabled. Comment them!
+		//The following lines should not be enabled in production. Comment them!
 		http.csrf().disable();
 		http.headers().frameOptions().disable();
 	}
@@ -69,10 +73,15 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 //			 .withUser(users.username("franco").password("password").roles("USER"));
 		
 		//2. SECOND APPROACH. AUTHENTICATION JDBC
-		build.jdbcAuthentication()
-		.dataSource(dataSource)
-		.passwordEncoder(passwordEncoder)
-		.usersByUsernameQuery("select username, password, enabled from users where username=?")
-		.authoritiesByUsernameQuery("select u.username, a.authority from authorities a inner join users u on (a.user_id=u.id) where u.username=?");
+//		build.jdbcAuthentication()
+//		.dataSource(dataSource)
+//		.passwordEncoder(passwordEncoder)
+//		.usersByUsernameQuery("select username, password, enabled from users where username=?")
+//		.authoritiesByUsernameQuery("select u.username, a.authority from authorities a inner join users u on (a.user_id=u.id) where u.username=?");
+		
+		//3. THIRD APPROACH. AUTHENTICATION JPA
+		build.userDetailsService(userDetailsService)
+		.passwordEncoder(passwordEncoder);
+
 	}
 }
