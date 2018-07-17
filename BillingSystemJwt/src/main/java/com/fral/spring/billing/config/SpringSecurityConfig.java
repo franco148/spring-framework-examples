@@ -17,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.fral.spring.billing.handlers.auth.LoginSuccessHandler;
 import com.fral.spring.billing.handlers.filter.JwtAuthenticationFilter;
+import com.fral.spring.billing.handlers.filter.JwtAuthorizationFilter;
 import com.fral.spring.billing.services.JpaUserDetailsService;
 
 @EnableGlobalMethodSecurity(securedEnabled=true, prePostEnabled=true)
@@ -60,6 +61,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 //			.exceptionHandling().accessDeniedPage("/error_403");
 			.and()
 				.addFilter(new JwtAuthenticationFilter(authenticationManager()))
+				.addFilter(new JwtAuthorizationFilter(authenticationManager()))
 			.csrf().disable()
 			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 		
