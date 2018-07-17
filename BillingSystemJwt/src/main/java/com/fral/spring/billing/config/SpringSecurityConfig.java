@@ -16,6 +16,7 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.fral.spring.billing.handlers.auth.LoginSuccessHandler;
+import com.fral.spring.billing.handlers.filter.JwtAuthenticationFilter;
 import com.fral.spring.billing.services.JpaUserDetailsService;
 
 @EnableGlobalMethodSecurity(securedEnabled=true, prePostEnabled=true)
@@ -45,7 +46,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 //			.antMatchers("/form/**").hasAnyRole("ADMIN")
 //			.antMatchers("/delete/**").hasAnyRole("ADMIN")
 //			.antMatchers("/invoices/**").hasAnyRole("ADMIN")
-			.anyRequest().authenticated();
+			.anyRequest().authenticated()
 		
 		//The following is not required when we need to use JWT. We do not need to redirect to login page.
 //			.and()
@@ -57,12 +58,15 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 //			.logout().permitAll()
 //			.and()
 //			.exceptionHandling().accessDeniedPage("/error_403");
+			.and()
+				.addFilter(new JwtAuthenticationFilter(authenticationManager()))
+			.csrf().disable()
+			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 		
 		//The following lines should not be enabled in production. Comment them!
 		//This need to be disabled when jwt needs to be used. Stateless approach.
-		http.csrf().disable()
-			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-		http.headers().frameOptions().disable();
+		//http.csrf().disable();
+		//http.headers().frameOptions().disable();
 	}
 
 	@Autowired
