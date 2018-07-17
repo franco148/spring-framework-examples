@@ -45,16 +45,18 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 //			.antMatchers("/form/**").hasAnyRole("ADMIN")
 //			.antMatchers("/delete/**").hasAnyRole("ADMIN")
 //			.antMatchers("/invoices/**").hasAnyRole("ADMIN")
-			.anyRequest().authenticated()
-			.and()
-				.formLogin()
-					.successHandler(successHandler)
-					.loginPage("/login")
-				.permitAll()
-			.and()
-			.logout().permitAll()
-			.and()
-			.exceptionHandling().accessDeniedPage("/error_403");
+			.anyRequest().authenticated();
+		
+		//The following is not required when we need to use JWT. We do not need to redirect to login page.
+//			.and()
+//				.formLogin()
+//					.successHandler(successHandler)
+//					.loginPage("/login")
+//				.permitAll()
+//			.and()
+//			.logout().permitAll()
+//			.and()
+//			.exceptionHandling().accessDeniedPage("/error_403");
 		
 		//The following lines should not be enabled in production. Comment them!
 		//This need to be disabled when jwt needs to be used. Stateless approach.
