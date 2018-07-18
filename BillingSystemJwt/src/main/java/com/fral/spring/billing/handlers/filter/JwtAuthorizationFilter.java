@@ -17,7 +17,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fral.spring.billing.handlers.SimpleGrantedAuthoritiesMixin;
+import com.fral.spring.billing.handlers.SimpleGrantedAuthorityMixin;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -61,7 +61,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 			
 			//This is throwing an exception, because there is not a empty constructor for GrantedAuthority
 			Collection<? extends GrantedAuthority> authorities = Arrays.asList(new ObjectMapper()
-																.addMixIn(SimpleGrantedAuthority.class, SimpleGrantedAuthoritiesMixin.class)
+																.addMixIn(SimpleGrantedAuthority.class, SimpleGrantedAuthorityMixin.class)
 																.readValue(roles.toString().getBytes(), SimpleGrantedAuthority[].class));
 			
 			authentication = new UsernamePasswordAuthenticationToken(username, null, authorities);
