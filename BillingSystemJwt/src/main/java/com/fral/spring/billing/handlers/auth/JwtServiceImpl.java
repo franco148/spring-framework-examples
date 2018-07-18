@@ -8,6 +8,7 @@ import java.util.Date;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.stereotype.Service;
 import org.springframework.util.Base64Utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,6 +19,7 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
+@Service
 public class JwtServiceImpl implements JwtService {
 
 public static final String SECRET = Base64Utils.encodeToString("My.Jwt.Secret.Key".getBytes());
@@ -29,7 +31,7 @@ public static final String SECRET = Base64Utils.encodeToString("My.Jwt.Secret.Ke
 	@Override
 	public String create(Authentication auth) throws IOException {
 
-		String username = auth.getName(); //((User) auth.getPrincipal()).getUsername();
+		String username = auth.getName(); // or ((User) auth.getPrincipal()).getUsername();
 
 		Collection<? extends GrantedAuthority> roles = auth.getAuthorities();
 
@@ -74,6 +76,7 @@ public static final String SECRET = Base64Utils.encodeToString("My.Jwt.Secret.Ke
 	public Collection<? extends GrantedAuthority> getRoles(String token) throws IOException {
 		Object roles = getClaims(token).get("authorities");
 
+		//This is throwing an exception, because there is not a empty constructor for GrantedAuthority
 		Collection<? extends GrantedAuthority> authorities = Arrays
 				.asList(new ObjectMapper().addMixIn(SimpleGrantedAuthority.class, SimpleGrantedAuthorityMixin.class)
 						.readValue(roles.toString().getBytes(), SimpleGrantedAuthority[].class));

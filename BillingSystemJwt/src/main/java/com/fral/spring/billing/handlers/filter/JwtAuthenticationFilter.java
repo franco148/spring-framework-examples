@@ -23,6 +23,8 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fral.spring.billing.handlers.auth.JwtService;
+import com.fral.spring.billing.handlers.auth.JwtServiceImpl;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -31,14 +33,16 @@ import io.jsonwebtoken.SignatureAlgorithm;
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 	
 	private AuthenticationManager authenticationManager;
-	
+	private JwtService jwtService;
 	
 
-	public JwtAuthenticationFilter(AuthenticationManager authenticationManager) {
+	public JwtAuthenticationFilter(AuthenticationManager authenticationManager, JwtService jwtService) {
 		
 		this.authenticationManager = authenticationManager;
 		//by default the interceptor is /login, so we can override it as follows:
 		setRequiresAuthenticationRequestMatcher(new AntPathRequestMatcher("/api/login", "POST"));
+		
+		this.jwtService = jwtService;
 	}
 
 
@@ -87,27 +91,15 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 	@Override
 	protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
 			Authentication authResult) throws IOException, ServletException {
-
-		String userName = authResult.getName(); // or (((User)auth.getPrincipal()).getUsername());
 		
-		Collection<? extends GrantedAuthority> roles = authResult.getAuthorities();
-		Claims claims = Jwts.claims();
-		claims.put("authorities", new ObjectMapper().writeValueAsString(roles));
+		String token = jwtService.create(authResult);
 		
-		String token = Jwts.builder()
-						   .setClaims(claims)
-						   .setSubject(userName)
-						   .signWith(SignatureAlgorithm.HS512, "My.Jwt.Secret.Key".getBytes())
-						   .setIssuedAt(new Date())
-						   .setExpiration(new Date(System.currentTimeMillis() + 3600000))
-						   .compact();
-		
-		response.addHeader("Authorization", "Bearer ".concat(token));
+		response.addHeader(JwtServiceImpl.HEADER_STRING, JwtServiceImpl.TOKEN_PREFIX.concat(token));
 		
 		Map<String, Object> body = new HashMap<>();
 		body.put("token", token);
 		body.put("user", (User)authResult.getPrincipal());
-		body.put("message", String.format("Hi %s, you have logged in successfully!", userName));
+		body.put("message", String.format("Hi %s, you have logged in successfully!", authResult.getName()));
 		
 		response.getWriter().write(new ObjectMapper().writeValueAsString(body));
 		response.setStatus(200);

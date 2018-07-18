@@ -15,6 +15,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import com.fral.spring.billing.handlers.auth.JwtService;
 import com.fral.spring.billing.handlers.auth.LoginSuccessHandler;
 import com.fral.spring.billing.handlers.filter.JwtAuthenticationFilter;
 import com.fral.spring.billing.handlers.filter.JwtAuthorizationFilter;
@@ -35,6 +36,9 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	@Autowired
 	private BCryptPasswordEncoder passwordEncoder;
+	
+	@Autowired
+	private JwtService jwtService;
 	
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
@@ -60,8 +64,8 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 //			.and()
 //			.exceptionHandling().accessDeniedPage("/error_403");
 			.and()
-				.addFilter(new JwtAuthenticationFilter(authenticationManager()))
-				.addFilter(new JwtAuthorizationFilter(authenticationManager()))
+				.addFilter(new JwtAuthenticationFilter(authenticationManager(), jwtService))
+				.addFilter(new JwtAuthorizationFilter(authenticationManager(), jwtService))
 			.csrf().disable()
 			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 		

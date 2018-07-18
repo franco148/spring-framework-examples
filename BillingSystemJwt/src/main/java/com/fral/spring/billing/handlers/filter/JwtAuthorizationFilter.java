@@ -18,6 +18,8 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fral.spring.billing.handlers.SimpleGrantedAuthorityMixin;
+import com.fral.spring.billing.handlers.auth.JwtService;
+import com.fral.spring.billing.handlers.auth.JwtServiceImpl;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -25,46 +27,31 @@ import io.jsonwebtoken.Jwts;
 
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
-	public JwtAuthorizationFilter(AuthenticationManager authenticationManager) {
+	private JwtService jwtService;
+	
+	
+	public JwtAuthorizationFilter(AuthenticationManager authenticationManager, JwtService jwtService) {
 		super(authenticationManager);
-		// TODO Auto-generated constructor stub
+
+		this.jwtService = jwtService;
 	}
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
 
-		String header = request.getHeader("Authorization");
+		String header = request.getHeader(JwtServiceImpl.HEADER_STRING);
 
 		if (!requiresAuthentication(header)) {
 			chain.doFilter(request, response);
 			return;
 		}
-		
-		boolean validToken;
-		Claims token = null;
-		try {
-			token = Jwts.parser()
-			.setSigningKey("My.Jwt.Secret.Key".getBytes())
-			.parseClaimsJws(header.replace("Bearer ", ""))
-			.getBody();
-			
-			validToken = true;
-		} catch (JwtException | IllegalArgumentException e) {
-			validToken = false;
-		}
+				
 		
 		UsernamePasswordAuthenticationToken authentication = null;
-		if (validToken) {
-			String username = token.getSubject();
-			Object roles = token.get("authorities");
+		if (jwtService.validate(header)) {
 			
-			//This is throwing an exception, because there is not a empty constructor for GrantedAuthority
-			Collection<? extends GrantedAuthority> authorities = Arrays.asList(new ObjectMapper()
-																.addMixIn(SimpleGrantedAuthority.class, SimpleGrantedAuthorityMixin.class)
-																.readValue(roles.toString().getBytes(), SimpleGrantedAuthority[].class));
-			
-			authentication = new UsernamePasswordAuthenticationToken(username, null, authorities);
+			authentication = new UsernamePasswordAuthenticationToken(jwtService.getUsername(header), null, jwtService.getRoles(header));
 		}
 		
 		SecurityContextHolder.getContext().setAuthentication(authentication);
