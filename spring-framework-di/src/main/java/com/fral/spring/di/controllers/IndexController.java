@@ -14,6 +14,7 @@ public class IndexController {
 //	private MyService myService = new MyService();
 	
 	// The following line is taking into account DI
+	// The injection of the service can also be done through setters and constructors.
 	@Autowired
 	private MyService myService;
 	
