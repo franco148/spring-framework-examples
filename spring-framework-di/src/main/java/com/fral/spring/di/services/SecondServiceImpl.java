@@ -3,7 +3,7 @@ package com.fral.spring.di.services;
 import org.springframework.stereotype.Component;
 
 @Component
-public class MySecondSvImpl implements MyService {
+public class SecondServiceImpl implements MyService {
 
 	@Override
 	public String operation() {

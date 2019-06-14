@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
  */
 @Primary
 @Component
-public class MyServiceImpl implements MyService {
+public class FirstServiceImpl implements MyService {
 
 	@Override
 	public String operation() {
