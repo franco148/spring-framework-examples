@@ -1,6 +1,7 @@
 package com.fral.spring.di.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +17,7 @@ public class IndexController {
 	// The following line is taking into account DI
 	// The injection of the service can also be done through setters and constructors.
 	@Autowired
+	@Qualifier("secondService")
 	private MyService myService;
 	
 	@GetMapping({"/", "", "index"})
