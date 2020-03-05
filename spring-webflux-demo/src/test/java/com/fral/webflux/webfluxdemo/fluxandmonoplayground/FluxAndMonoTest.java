@@ -2,6 +2,7 @@ package com.fral.webflux.webfluxdemo.fluxandmonoplayground;
 
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
+import reactor.test.StepVerifier;
 
 public class FluxAndMonoTest {
 
@@ -48,5 +49,61 @@ public class FluxAndMonoTest {
                 .log();
 
         stringFlux.subscribe(System.out::println, System.err::println, ()-> System.out.println("Completed..."));
+    }
+
+    @Test
+    void fluxTestElements_WithoutError() {
+        Flux<String> stringFlux = Flux.just("Spring", "Spring Boot", "Reactive Spring")
+                .log();
+
+        StepVerifier.create(stringFlux)
+                    .expectNext("Spring")
+                    .expectNext("Spring Boot")
+                    .expectNext("Reactive Spring")
+                    .verifyComplete();
+    }
+
+    @Test
+    void fluxTestElements_WithError() {
+        Flux<String> stringFlux = Flux.just("Spring", "Spring Boot", "Reactive Spring")
+                .concatWith(Flux.error(new RuntimeException("Exception occurred...")))
+                .log();
+
+        StepVerifier.create(stringFlux)
+                .expectNext("Spring")
+                .expectNext("Spring Boot")
+                .expectNext("Reactive Spring")
+//                .verifyError();
+//                .expectError(RuntimeException.class)
+                .expectErrorMessage("Exception occurred...")
+                .verify();
+    }
+
+    @Test
+    void fluxTestElementsCount_WithError() {
+        Flux<String> stringFlux = Flux.just("Spring", "Spring Boot", "Reactive Spring")
+                .concatWith(Flux.error(new RuntimeException("Exception occurred...")))
+                .log();
+
+        StepVerifier.create(stringFlux)
+                .expectNextCount(3)
+//                .verifyError();
+//                .expectError(RuntimeException.class)
+                .expectErrorMessage("Exception occurred...")
+                .verify();
+    }
+
+    @Test
+    void fluxTestElements_WithError2() {
+        Flux<String> stringFlux = Flux.just("Spring", "Spring Boot", "Reactive Spring")
+                .concatWith(Flux.error(new RuntimeException("Exception occurred...")))
+                .log();
+
+        StepVerifier.create(stringFlux)
+                .expectNext("Spring", "Spring Boot", "Reactive Spring")
+//                .verifyError();
+//                .expectError(RuntimeException.class)
+                .expectErrorMessage("Exception occurred...")
+                .verify();
     }
 }
