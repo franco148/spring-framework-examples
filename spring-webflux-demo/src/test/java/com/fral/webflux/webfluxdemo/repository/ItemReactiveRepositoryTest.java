@@ -61,4 +61,13 @@ public class ItemReactiveRepositoryTest {
 
 
     }
+
+    @Test
+    public void findItemByDescrition() {
+
+        StepVerifier.create(itemReactiveRepository.findByDescription("Bose Headphones").log("findItemByDescrition : "))
+                .expectSubscription()
+                .expectNextCount(1)
+                .verifyComplete();
+    }
 }
