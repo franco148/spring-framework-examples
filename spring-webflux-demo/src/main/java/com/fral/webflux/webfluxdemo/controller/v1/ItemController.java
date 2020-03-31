@@ -44,4 +44,12 @@ public class ItemController {
 
 
     }
+
+    @DeleteMapping(ITEM_END_POINT_V1+"/{id}")
+    public Mono<Void> deleteItem(@PathVariable String id){
+
+        return itemReactiveRepository.deleteById(id);
+
+
+    }
 }
