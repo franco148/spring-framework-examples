@@ -28,3 +28,6 @@ spring:
     database: local
 server:
   port: 8284
+---
+spring:
+  profiles: test
