@@ -52,4 +52,25 @@ public class ItemController {
 
 
     }
+
+    // id and item to be updated in the req = path variable and request body - completed
+    // using the id get the item from database - completed
+    // updated the item retrieved with the value from the request body - completed
+    // save the item - completed
+    //return the saved item - completed
+    @PutMapping(ITEM_END_POINT_V1+"/{id}")
+    public Mono<ResponseEntity<Item>> updateItem(@PathVariable String id,
+                                                 @RequestBody Item item){
+
+        return itemReactiveRepository.findById(id)
+                .flatMap(currentItem -> {
+
+                    currentItem.setPrice(item.getPrice());
+                    currentItem.setDescription(item.getDescription());
+                    return itemReactiveRepository.save(currentItem);
+                })
+                .map(updatedItem -> new ResponseEntity<>(updatedItem, HttpStatus.OK))
+                .defaultIfEmpty(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+
+    }
 }
