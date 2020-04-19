@@ -64,7 +64,7 @@ public class ItemClientController {
                 .log("Created item is : ");
 
     }
-    
+
     @PutMapping("/client/updateItem/{id}")
     public Mono<Item> updateItem(@PathVariable String id,
                                  @RequestBody Item item){
@@ -76,5 +76,14 @@ public class ItemClientController {
                 .retrieve()
                 .bodyToMono(Item.class)
                 .log("Updated Item is : ");
+    }
+
+    @DeleteMapping("/client/deleteItem/{id}")
+    public Mono<Void> deleteItem(@PathVariable String id){
+
+        return webClient.delete().uri("/v1/items/{id}",id)
+                .retrieve()
+                .bodyToMono(Void.class)
+                .log("Deleted Item is");
     }
 }
