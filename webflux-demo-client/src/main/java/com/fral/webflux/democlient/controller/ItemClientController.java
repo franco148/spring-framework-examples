@@ -2,10 +2,7 @@ package com.fral.webflux.democlient.controller;
 
 import com.fral.webflux.democlient.domain.Item;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -66,5 +63,18 @@ public class ItemClientController {
                 .bodyToMono(Item.class)
                 .log("Created item is : ");
 
+    }
+    
+    @PutMapping("/client/updateItem/{id}")
+    public Mono<Item> updateItem(@PathVariable String id,
+                                 @RequestBody Item item){
+
+        Mono<Item> itemBody = Mono.just(item);
+
+        return webClient.put().uri("/v1/items/{id}",id)
+                .body(itemBody, Item.class)
+                .retrieve()
+                .bodyToMono(Item.class)
+                .log("Updated Item is : ");
     }
 }
