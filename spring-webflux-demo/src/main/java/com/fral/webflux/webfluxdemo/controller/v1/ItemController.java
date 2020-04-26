@@ -16,6 +16,12 @@ import static com.fral.webflux.webfluxdemo.constants.ItemConstants.ITEM_END_POIN
 @Slf4j
 public class ItemController {
 
+//    @ExceptionHandler(RuntimeException.class)
+//    public ResponseEntity<String> handleRuntimeException(RuntimeException ex){
+//        log.error("Exception caught in handleRuntimeException :  {} " , ex);
+//        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+//    }
+
     @Autowired
     ItemReactiveRepository itemReactiveRepository;
 
@@ -51,6 +57,13 @@ public class ItemController {
         return itemReactiveRepository.deleteById(id);
 
 
+    }
+
+    @GetMapping(ITEM_END_POINT_V1+"/runtimeException")
+    public Flux<Item> runtimeException(){
+
+        return itemReactiveRepository.findAll()
+                .concatWith(Mono.error(new RuntimeException("RuntimeException Occurred.")));
     }
 
     // id and item to be updated in the req = path variable and request body - completed
