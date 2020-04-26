@@ -1,7 +1,6 @@
 package com.fral.webflux.webfluxdemo.controller.v1;
 
 
-import com.fral.webflux.webfluxdemo.constants.ItemConstants;
 import com.fral.webflux.webfluxdemo.document.Item;
 import com.fral.webflux.webfluxdemo.repository.ItemReactiveRepository;
 import org.junit.Before;
@@ -22,6 +21,7 @@ import reactor.test.StepVerifier;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.fral.webflux.webfluxdemo.constants.ItemConstants.ITEM_END_POINT_V1;
 import static org.junit.Assert.assertTrue;
 
 @SpringBootTest
@@ -59,7 +59,7 @@ public class ItemControllerTest {
 
     @Test
     public void getAllItems(){
-        webTestClient.get().uri(ItemConstants.ITEM_END_POINT_V1)
+        webTestClient.get().uri(ITEM_END_POINT_V1)
                 .exchange()
                 .expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
@@ -70,7 +70,7 @@ public class ItemControllerTest {
 
     @Test
     public void getAllItems_approach2(){
-        webTestClient.get().uri(ItemConstants.ITEM_END_POINT_V1)
+        webTestClient.get().uri(ITEM_END_POINT_V1)
                 .exchange()
                 .expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
@@ -91,7 +91,7 @@ public class ItemControllerTest {
     public void getAllItems_approach3(){
 
 
-        Flux<Item> itemsFlux = webTestClient.get().uri(ItemConstants.ITEM_END_POINT_V1)
+        Flux<Item> itemsFlux = webTestClient.get().uri(ITEM_END_POINT_V1)
                 .exchange()
                 .expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
@@ -106,7 +106,7 @@ public class ItemControllerTest {
     @Test
     public void getOneItem(){
 
-        webTestClient.get().uri(ItemConstants.ITEM_END_POINT_V1.concat("/{id}"),"ABC")
+        webTestClient.get().uri(ITEM_END_POINT_V1.concat("/{id}"),"ABC")
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
@@ -117,7 +117,7 @@ public class ItemControllerTest {
     @Test
     public void getOneItem_notFound(){
 
-        webTestClient.get().uri(ItemConstants.ITEM_END_POINT_V1.concat("/{id}"),"DEF")
+        webTestClient.get().uri(ITEM_END_POINT_V1.concat("/{id}"),"DEF")
                 .exchange()
                 .expectStatus().isNotFound();
 
@@ -128,7 +128,7 @@ public class ItemControllerTest {
 
         Item item = new Item(null, "Iphone X", 999.99);
 
-        webTestClient.post().uri(ItemConstants.ITEM_END_POINT_V1)
+        webTestClient.post().uri(ITEM_END_POINT_V1)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Mono.just(item), Item.class)
                 .exchange()
@@ -145,7 +145,7 @@ public class ItemControllerTest {
     @Test
     public void deleteItem(){
 
-        webTestClient.delete().uri(ItemConstants.ITEM_END_POINT_V1.concat("/{id}"),"ABC")
+        webTestClient.delete().uri(ITEM_END_POINT_V1.concat("/{id}"),"ABC")
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isOk()
@@ -158,7 +158,7 @@ public class ItemControllerTest {
         double newPrice =129.99;
         Item item = new Item(null,"Beats HeadPhones", newPrice);
 
-        webTestClient.put().uri(ItemConstants.ITEM_END_POINT_V1.concat("/{id}"),"ABC")
+        webTestClient.put().uri(ITEM_END_POINT_V1.concat("/{id}"),"ABC")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .body(Mono.just(item), Item.class)
@@ -174,12 +174,24 @@ public class ItemControllerTest {
         double newPrice =129.99;
         Item item = new Item(null,"Beats HeadPhones", newPrice);
 
-        webTestClient.put().uri(ItemConstants.ITEM_END_POINT_V1.concat("/{id}"),"DEF")
+        webTestClient.put().uri(ITEM_END_POINT_V1.concat("/{id}"),"DEF")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .body(Mono.just(item), Item.class)
                 .exchange()
                 .expectStatus().isNotFound();
+
+    }
+
+    @Test
+    public void runTimeException(){
+        webTestClient.get().uri(ITEM_END_POINT_V1+"/runtimeException")
+                .exchange()
+                .expectStatus().is5xxServerError()
+                .expectBody(String.class)
+                .isEqualTo("RuntimeException Occurred.");
+
+
 
     }
 }
