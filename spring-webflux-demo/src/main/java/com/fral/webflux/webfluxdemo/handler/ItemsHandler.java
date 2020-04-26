@@ -89,4 +89,9 @@ public class ItemsHandler {
 
     }
 
+    public Mono<ServerResponse> itemsEx(ServerRequest serverRequest){
+
+        throw new RuntimeException("RuntimeException Occurred");
+    }
+
 }
