@@ -27,22 +27,12 @@ public class JpaStreamsController {
     @GetMapping("/students/{studentId}")
     public ResponseEntity<Student> findStudentById(@PathVariable("studentId") Long studentId) {
 
-        log.info("SQL log with JPAStreamer");
         Student student = jpaStreamer.stream(Student.class)
-                .filter(s -> s.getId().equals(studentId))
+                .filter(Student$.id.equal(studentId))
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("Student could not be found."));
 
-        log.info("SQL log with SpringRepository");
-        Student student2 = studentRepository.findById(studentId).orElseThrow(() -> new RuntimeException("Student could not be found."));
-
-        log.info("SQL log with SpringRepository - FindAll");
-        List<Student> students = studentRepository.findAll();
-
-        log.info("Returning the information....");
-
-        return ResponseEntity.ok(student2);
-//        return null;
+        return ResponseEntity.ok(student);
     }
 
     @PostMapping("/students")
