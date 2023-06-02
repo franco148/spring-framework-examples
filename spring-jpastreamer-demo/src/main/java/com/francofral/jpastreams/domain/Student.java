@@ -1,5 +1,7 @@
 package com.francofral.jpastreams.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -36,7 +38,12 @@ public class Student {
         inverseJoinColumns = @JoinColumn(name = "courseId")
     )
     @ToString.Exclude
+    @JsonIgnore
     private Set<Course> courses = new HashSet<>();
+
+    public void addCourse(Course course) {
+        courses.add(course);
+    }
 
     @Override
     public boolean equals(Object o) {

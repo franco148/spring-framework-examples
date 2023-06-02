@@ -99,14 +99,34 @@ public class JpaStreamsController {
         return ResponseEntity.ok(courseFlatDto);
     }
 
-    private Function<Tuple, CourseDto> mapTupleToCourseDto() {
-        return tuple -> new CourseDto(tuple.get("id", Long.class), tuple.get("name", String.class), null);
-    }
-
     @PostMapping("/courses")
     public ResponseEntity<Void> saveCourse(@RequestBody Course course) {
         courseRepository.save(course);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @PostMapping("/students/{studentId}/course/{courseId}")
+    public ResponseEntity<Void> enrollToCourse(@PathVariable("studentId") Long studentId,
+                                               @PathVariable("courseId") Long courseId) {
+        Student student = jpaStreamer.stream(Student.class)
+                .filter(Student$.id.equal(studentId))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Student could not be found."));
+
+        Course course = jpaStreamer.stream(Course.class)
+                .filter(Course$.id.equal(courseId))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Course could not be found."));
+
+        student.addCourse(course);
+
+        studentRepository.save(student);
+
+        return ResponseEntity.ok().build();
+    }
+
+    private Function<Tuple, CourseDto> mapTupleToCourseDto() {
+        return tuple -> new CourseDto(tuple.get("id", Long.class), tuple.get("name", String.class), null);
     }
 }

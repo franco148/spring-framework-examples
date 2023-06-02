@@ -1,5 +1,7 @@
 package com.francofral.jpastreams.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -35,6 +37,7 @@ public class Course {
     private String name;
     @ToString.Exclude
     @ManyToMany(mappedBy = "courses", fetch = FetchType.LAZY)
+    @JsonIgnore
     private Set<Student> students = new HashSet<>();
 
     @Override
