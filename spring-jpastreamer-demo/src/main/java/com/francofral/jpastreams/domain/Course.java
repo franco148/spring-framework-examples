@@ -23,6 +23,12 @@ import java.util.Set;
 @Table(name = "courses")
 public class Course {
 
+    public Course(){}
+    public Course(Long id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
