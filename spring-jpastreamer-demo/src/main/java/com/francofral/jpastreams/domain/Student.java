@@ -1,4 +1,4 @@
-package com.francofral.jpastreams;
+package com.francofral.jpastreams.domain;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -11,7 +11,6 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.hibernate.Hibernate;
 
 import java.util.HashSet;
 import java.util.Objects;

@@ -1,5 +1,6 @@
 package com.francofral.jpastreams;
 
+import com.francofral.jpastreams.domain.Student;
 import com.francofral.jpastreams.repository.StudentRepository;
 import com.speedment.jpastreamer.application.JPAStreamer;
 import lombok.AllArgsConstructor;
@@ -12,8 +13,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @Slf4j
 @RestController

@@ -1,7 +1,5 @@
-package com.francofral.jpastreams;
+package com.francofral.jpastreams.domain;
 
-import jakarta.persistence.Basic;
-import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
