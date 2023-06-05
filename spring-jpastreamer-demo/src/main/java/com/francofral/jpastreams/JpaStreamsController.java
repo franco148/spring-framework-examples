@@ -132,22 +132,21 @@ public class JpaStreamsController {
     @GetMapping("/students/{studentId}/enrolled")
     public ResponseEntity<StudentDto> getStudentsWithAmountOfEnrolledCourses(@PathVariable("studentId") Long studentId) {
 
-        Map<Student, Integer> collect = jpaStreamer.stream(of(Student.class).joining(Student$.courses))
+        StudentDto studentDto = jpaStreamer.stream(of(Student.class).joining(Student$.courses))
                 .filter(Student$.id.equal(studentId))
-                .collect(toMap(Function.identity(), student -> student.getCourses().size()));
+                .collect(toMap(Function.identity(), student -> student.getCourses().size()))
+                .entrySet()
+                .stream()
+                .map(entry -> StudentDto.builder()
+                        .id(entry.getKey().getId())
+                        .name(entry.getKey().getName())
+                        .lastName(entry.getKey().getLastName())
+                        .numberOfEnrolledCourses(entry.getValue().shortValue())
+                        .build())
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Student could not be found."));
 
-        StudentDto response = collect.entrySet().stream()
-                .map(entry -> {
-                    StudentDto res = new StudentDto();
-                    res.setId(entry.getKey().getId());
-                    res.setName(entry.getKey().getName());
-                    res.setLastName(entry.getKey().getLastName());
-                    res.setNumberOfEnrolledCourses(entry.getValue().shortValue());
-
-                    return res;
-                }).findFirst()
-                .orElse(null);
-        return null;
+        return ResponseEntity.ok(studentDto);
     }
 
     private Function<Tuple, CourseDto> mapTupleToCourseDto() {
