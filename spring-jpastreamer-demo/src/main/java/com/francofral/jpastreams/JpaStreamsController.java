@@ -25,8 +25,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
-import java.util.stream.Collectors;
+
+import static com.speedment.jpastreamer.streamconfiguration.StreamConfiguration.of;
+import static java.util.stream.Collectors.toMap;
 
 @Slf4j
 @RestController
@@ -124,6 +127,27 @@ public class JpaStreamsController {
         studentRepository.save(student);
 
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/students/{studentId}/enrolled")
+    public ResponseEntity<StudentDto> getStudentsWithAmountOfEnrolledCourses(@PathVariable("studentId") Long studentId) {
+
+        Map<Student, Integer> collect = jpaStreamer.stream(of(Student.class).joining(Student$.courses))
+                .filter(Student$.id.equal(studentId))
+                .collect(toMap(Function.identity(), student -> student.getCourses().size()));
+
+        StudentDto response = collect.entrySet().stream()
+                .map(entry -> {
+                    StudentDto res = new StudentDto();
+                    res.setId(entry.getKey().getId());
+                    res.setName(entry.getKey().getName());
+                    res.setLastName(entry.getKey().getLastName());
+                    res.setNumberOfEnrolledCourses(entry.getValue().shortValue());
+
+                    return res;
+                }).findFirst()
+                .orElse(null);
+        return null;
     }
 
     private Function<Tuple, CourseDto> mapTupleToCourseDto() {
