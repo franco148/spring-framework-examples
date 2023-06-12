@@ -7,6 +7,8 @@ import com.francofral.jpastreams.domain.Student$;
 import com.francofral.jpastreams.dto.CourseDto;
 import com.francofral.jpastreams.dto.FlatCourseDto;
 import com.francofral.jpastreams.dto.StudentDto;
+import com.francofral.jpastreams.mapper.CourseMapper;
+import com.francofral.jpastreams.mapper.StudentMapper;
 import com.francofral.jpastreams.repository.CourseRepository;
 import com.francofral.jpastreams.repository.StudentRepository;
 import com.speedment.jpastreamer.application.JPAStreamer;
@@ -24,8 +26,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-import java.util.Map;
 import java.util.function.Function;
 
 import static com.speedment.jpastreamer.streamconfiguration.StreamConfiguration.of;
@@ -40,6 +40,8 @@ public class JpaStreamsController {
     private final JPAStreamer jpaStreamer;
     private final StudentRepository studentRepository;
     private final CourseRepository courseRepository;
+    private final StudentMapper studentMapper;
+    private final CourseMapper courseMapper;
 
     @GetMapping("/students/{studentId}")
     public ResponseEntity<Student> findStudentById(@PathVariable("studentId") Long studentId) {
