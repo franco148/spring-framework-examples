@@ -7,6 +7,7 @@ import com.francofral.jpastreams.domain.Student$;
 import com.francofral.jpastreams.dto.CourseDto;
 import com.francofral.jpastreams.dto.FlatCourseDto;
 import com.francofral.jpastreams.dto.StudentDto;
+import com.francofral.jpastreams.dto.StudentFullDto;
 import com.francofral.jpastreams.mapper.CourseMapper;
 import com.francofral.jpastreams.mapper.StudentMapper;
 import com.francofral.jpastreams.repository.CourseRepository;
@@ -52,6 +53,17 @@ public class JpaStreamsController {
                 .orElseThrow(() -> new RuntimeException("Student could not be found."));
 
         return ResponseEntity.ok(student);
+    }
+
+    @GetMapping("/students/{studentId}/full")
+    public ResponseEntity<StudentFullDto> findStudentFullById(@PathVariable("studentId") Long studentId) {
+
+        Student student = jpaStreamer.stream(Student.class)
+                .filter(Student$.id.equal(studentId))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Student could not be found."));
+
+        return ResponseEntity.ok(studentMapper.studentToDto(student));
     }
 
     @PostMapping("/students")
