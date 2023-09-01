@@ -18,6 +18,7 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
+import static com.fral.springv3security.security.ApplicationUserPermission.*;
 import static com.fral.springv3security.security.ApplicationUserRole.*;
 
 @Configuration
@@ -39,6 +40,10 @@ public class ApplicationSecurityConfig {
 //                        .requestMatchers("/", "index", "/css/*", "/js/*").permitAll()
                         .requestMatchers(HttpMethod.GET, "/", "/index.html", "/css/*", "/js/*").permitAll()
                         .requestMatchers("/api/**").hasRole(STUDENT.name())
+                        .requestMatchers(HttpMethod.DELETE, "/management/api/**").hasAuthority(COURSE_WRITE.name())
+                        .requestMatchers(HttpMethod.POST, "/management/api/**").hasAuthority(COURSE_WRITE.name())
+                        .requestMatchers(HttpMethod.PUT, "/management/api/**").hasAuthority(COURSE_WRITE.name())
+                        .requestMatchers(HttpMethod.GET, "/management/api/**").hasAnyRole(ADMIN.name(), ADMINTRAINEE.name())
                         .anyRequest().authenticated()
             )
             .httpBasic(Customizer.withDefaults());
@@ -64,8 +69,16 @@ public class ApplicationSecurityConfig {
                 .roles(ADMIN.name()) // ROLE_ADMIN
                 .build();
 
+        UserDetails tomTraineeUser = User.builder()
+                .passwordEncoder(passwordEncoder()::encode)
+                .username("tom")
+                .password("password")
+                .roles(ADMINTRAINEE.name()) // ROLE_ADMINTRAINEE
+                .build();
+
         manager.createUser(annaSmithUser);
         manager.createUser(mariaJonesUser);
+        manager.createUser(tomTraineeUser);
 
         return manager;
     }
