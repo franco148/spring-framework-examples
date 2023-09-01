@@ -27,6 +27,7 @@ public class ApplicationSecurityConfig {
 //                        .requestMatchers(new AntPathRequestMatcher("index")).permitAll()
 //                        .requestMatchers(new AntPathRequestMatcher("/css/*")).permitAll()
 //                        .requestMatchers(new AntPathRequestMatcher("/js/*")).permitAll()
+
 //                        .requestMatchers("/", "index", "/css/*", "/js/*").permitAll()
                         .requestMatchers(HttpMethod.GET, "/", "/index.html", "/css/*", "/js/*").permitAll()
                         .anyRequest().authenticated()
