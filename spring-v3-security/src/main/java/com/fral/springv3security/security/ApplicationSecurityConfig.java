@@ -24,6 +24,7 @@ import static com.fral.springv3security.security.ApplicationUserRole.*;
 @Configuration
 @EnableWebSecurity
 //@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true) // deprecated
+// prePostEnabled = @PreAuthorize
 @EnableMethodSecurity()
 public class ApplicationSecurityConfig {
 
@@ -40,10 +41,12 @@ public class ApplicationSecurityConfig {
 //                        .requestMatchers("/", "index", "/css/*", "/js/*").permitAll()
                         .requestMatchers(HttpMethod.GET, "/", "/index.html", "/css/*", "/js/*").permitAll()
                         .requestMatchers("/api/**").hasRole(STUDENT.name())
-                        .requestMatchers(HttpMethod.DELETE, "/management/api/**").hasAuthority(COURSE_WRITE.name())
-                        .requestMatchers(HttpMethod.POST, "/management/api/**").hasAuthority(COURSE_WRITE.name())
-                        .requestMatchers(HttpMethod.PUT, "/management/api/**").hasAuthority(COURSE_WRITE.name())
-                        .requestMatchers(HttpMethod.GET, "/management/api/**").hasAnyRole(ADMIN.name(), ADMINTRAINEE.name())
+
+//                        .requestMatchers(HttpMethod.DELETE, "/management/api/**").hasAuthority(COURSE_WRITE.getPermission())
+//                        .requestMatchers(HttpMethod.POST, "/management/api/**").hasAuthority(COURSE_WRITE.getPermission())
+//                        .requestMatchers(HttpMethod.PUT, "/management/api/**").hasAuthority(COURSE_WRITE.getPermission())
+//                        .requestMatchers(HttpMethod.GET, "/management/api/**").hasAnyRole(ADMIN.name(), ADMINTRAINEE.name())
+
                         .anyRequest().authenticated()
             )
             .httpBasic(Customizer.withDefaults());
@@ -59,21 +62,24 @@ public class ApplicationSecurityConfig {
                 .passwordEncoder(passwordEncoder()::encode)
                 .username("annasmith")
                 .password("password")
-                .roles(STUDENT.name()) // ROLE_STUDENT
+//                .roles(STUDENT.name()) // ROLE_STUDENT
+                .authorities(STUDENT.getGrantedAuthorities())
                 .build();
 
         UserDetails mariaJonesUser = User.builder()
                 .passwordEncoder(passwordEncoder()::encode)
                 .username("mariajones")
                 .password("password")
-                .roles(ADMIN.name()) // ROLE_ADMIN
+//                .roles(ADMIN.name()) // ROLE_ADMIN
+                .authorities(ADMIN.getGrantedAuthorities())
                 .build();
 
         UserDetails tomTraineeUser = User.builder()
                 .passwordEncoder(passwordEncoder()::encode)
                 .username("tom")
                 .password("password")
-                .roles(ADMINTRAINEE.name()) // ROLE_ADMINTRAINEE
+//                .roles(ADMINTRAINEE.name()) // ROLE_ADMINTRAINEE
+                .authorities(ADMINTRAINEE.getGrantedAuthorities())
                 .build();
 
         manager.createUser(annaSmithUser);
