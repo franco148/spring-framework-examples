@@ -18,6 +18,8 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
+import java.util.concurrent.TimeUnit;
+
 import static com.fral.springv3security.security.ApplicationUserPermission.*;
 import static com.fral.springv3security.security.ApplicationUserRole.*;
 
@@ -28,6 +30,19 @@ import static com.fral.springv3security.security.ApplicationUserRole.*;
 @EnableMethodSecurity()
 public class ApplicationSecurityConfig {
 
+    /**
+     * HttpBasic Authentication:
+     *  - Always send Authorization header with base64 encoded password
+     *  - We cannot log out
+     *  - It requires HTTPs (it is recommended)
+     * Form Authentication:
+     *  - The first time it returns 200 status code, + sessionCookieID
+     *  - The sessionID expires after 30 minutes of inactivity
+     *  - The session ID can be modified with rememberMe() with defaults to 2 weeks
+     * @param http
+     * @return
+     * @throws Exception
+     */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
@@ -49,7 +64,27 @@ public class ApplicationSecurityConfig {
 
                         .anyRequest().authenticated()
             )
-            .httpBasic(Customizer.withDefaults());
+            // Until here Basic Authentication
+//            .httpBasic(Customizer.withDefaults());
+
+            // From here, form-based authentication
+            .formLogin(form -> form
+                    .loginPage("/login")
+                    .permitAll()
+                    .passwordParameter("password") // This both parameter names are by default
+                    .usernameParameter("username") // If we needed to change it we can do it, so the form names should change as well.
+                    .defaultSuccessUrl("/courses", true))
+            .rememberMe(remember -> remember
+                    .tokenValiditySeconds((int) TimeUnit.DAYS.toSeconds(21))
+                    .key("somethingverysecured")
+                    .rememberMeParameter("remember-me"))
+            .logout(logout -> logout
+                    .logoutUrl("/logout")
+                    .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "GET")) // If csrf enabled, then this should be removed, since this should be POST request.
+                    .clearAuthentication(true)
+                    .invalidateHttpSession(true)
+                    .deleteCookies("JSESSIONID", "remember-me")
+                    .logoutSuccessUrl("/login"));
 
         return http.build();
     }
