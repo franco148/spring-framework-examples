@@ -1,19 +1,24 @@
 package com.fral.springv3security.security;
 
 import com.fral.springv3security.auth.ApplicationUserService;
+import com.fral.springv3security.jwt.JwtConfig;
+import com.fral.springv3security.jwt.JwtTokenVerifier;
+import com.fral.springv3security.jwt.JwtUsernameAndPasswordAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
-import java.util.concurrent.TimeUnit;
+import javax.crypto.SecretKey;
 
 import static com.fral.springv3security.security.ApplicationUserRole.*;
 
@@ -26,10 +31,17 @@ public class ApplicationSecurityConfig {
 
     private final ApplicationUserService applicationUserService;
     private final PasswordEncoder passwordEncoder;
+    private final JwtConfig jwtConfig;
+    private final SecretKey secretKey;
 
-    public ApplicationSecurityConfig(ApplicationUserService applicationUserService, PasswordEncoder passwordEncoder) {
+    public ApplicationSecurityConfig(ApplicationUserService applicationUserService,
+                                     PasswordEncoder passwordEncoder,
+                                     JwtConfig jwtConfig,
+                                     SecretKey secretKey) {
         this.applicationUserService = applicationUserService;
         this.passwordEncoder = passwordEncoder;
+        this.jwtConfig = jwtConfig;
+        this.secretKey = secretKey;
     }
 
     //region Basic & Form Based Authentication
@@ -129,37 +141,37 @@ public class ApplicationSecurityConfig {
     //endregion
 
     //region Database authentication
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(
-                        authorize -> authorize
-                            .requestMatchers(HttpMethod.GET, "/", "/index.html", "/css/*", "/js/*").permitAll()
-                            .requestMatchers("/api/**").hasRole(STUDENT.name())
-                            .anyRequest().authenticated()
-                )
-//                .authenticationManager(getAuthenticationManager(http))
-                .authenticationProvider(daoAuthenticationProvider())
-                .formLogin(form -> form
-                        .loginPage("/login")
-                        .permitAll()
-                        .passwordParameter("password") // This both parameter names are by default
-                        .usernameParameter("username") // If we needed to change it we can do it, so the form names should change as well.
-                        .defaultSuccessUrl("/courses", true))
-                .rememberMe(remember -> remember
-                        .tokenValiditySeconds((int) TimeUnit.DAYS.toSeconds(21))
-                        .key("somethingverysecured")
-                        .rememberMeParameter("remember-me"))
-                .logout(logout -> logout
-                        .logoutUrl("/logout")
-                        .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "GET")) // If csrf enabled, then this should be removed, since this should be POST request.
-                        .clearAuthentication(true)
-                        .invalidateHttpSession(true)
-                        .deleteCookies("JSESSIONID", "remember-me")
-                        .logoutSuccessUrl("/login"));
-
-        return http.build();
-    }
+//    @Bean
+//    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+//        http.csrf(AbstractHttpConfigurer::disable)
+//                .authorizeHttpRequests(
+//                        authorize -> authorize
+//                            .requestMatchers(HttpMethod.GET, "/", "/index.html", "/css/*", "/js/*").permitAll()
+//                            .requestMatchers("/api/**").hasRole(STUDENT.name())
+//                            .anyRequest().authenticated()
+//                )
+////                .authenticationManager(getAuthenticationManager(http))
+//                .authenticationProvider(daoAuthenticationProvider())
+//                .formLogin(form -> form
+//                        .loginPage("/login")
+//                        .permitAll()
+//                        .passwordParameter("password") // This both parameter names are by default
+//                        .usernameParameter("username") // If we needed to change it we can do it, so the form names should change as well.
+//                        .defaultSuccessUrl("/courses", true))
+//                .rememberMe(remember -> remember
+//                        .tokenValiditySeconds((int) TimeUnit.DAYS.toSeconds(21))
+//                        .key("somethingverysecured")
+//                        .rememberMeParameter("remember-me"))
+//                .logout(logout -> logout
+//                        .logoutUrl("/logout")
+//                        .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "GET")) // If csrf enabled, then this should be removed, since this should be POST request.
+//                        .clearAuthentication(true)
+//                        .invalidateHttpSession(true)
+//                        .deleteCookies("JSESSIONID", "remember-me")
+//                        .logoutSuccessUrl("/login"));
+//
+//        return http.build();
+//    }
 
 //    private AuthenticationManager getAuthenticationManager(HttpSecurity http) throws Exception {
 //        // Configure AuthenticationBuilder
@@ -173,6 +185,47 @@ public class ApplicationSecurityConfig {
 //                .build();
 //    }
 
+//    @Bean
+//    public DaoAuthenticationProvider daoAuthenticationProvider() {
+//        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+//        provider.setPasswordEncoder(passwordEncoder);
+//        provider.setUserDetailsService(applicationUserService);
+//
+//        return provider;
+//    }
+    //endregion
+
+
+    //region JSON Web Tokens Authentication
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http.csrf(AbstractHttpConfigurer::disable)
+                .addFilter(new JwtUsernameAndPasswordAuthenticationFilter(authenticationManager(), jwtConfig, secretKey))
+                .addFilterAfter(new JwtTokenVerifier(jwtConfig, secretKey), JwtUsernameAndPasswordAuthenticationFilter.class)
+//                .authenticationProvider(daoAuthenticationProvider())
+                .sessionManagement(manager -> manager
+                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+                .authorizeHttpRequests(
+                    authorize -> authorize
+                        .requestMatchers(HttpMethod.GET, "/", "/index.html", "/css/*", "/js/*").permitAll()
+                        .requestMatchers("/api/**").hasRole(STUDENT.name())
+                        .anyRequest().authenticated()
+                );
+
+        return http.build();
+    }
+
+//    @Bean
+//    private AuthenticationManager getAuthenticationManager(HttpSecurity http) throws Exception {
+//        // Configure AuthenticationBuilder
+//        AuthenticationManagerBuilder authManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
+//        authManagerBuilder.userDetailsService(applicationUserService).passwordEncoder(passwordEncoder);
+//
+//        // Get AuthenticationManager
+//        return authManagerBuilder.build();
+//    }
+
     @Bean
     public DaoAuthenticationProvider daoAuthenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
@@ -181,10 +234,15 @@ public class ApplicationSecurityConfig {
 
         return provider;
     }
-    //endregion
+
+    @Bean
+    public AuthenticationManager authenticationManager() {
+        return new ProviderManager(daoAuthenticationProvider());
+    }
 
 //    @Bean
-//    public PasswordEncoder passwordEncoder() {
-//        return new BCryptPasswordEncoder();
+//    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+//        return config.getAuthenticationManager();
 //    }
+    //endregion
 }
